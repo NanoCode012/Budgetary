@@ -41,8 +41,13 @@ if (isset($_POST['register'])) {
             if (($stmt->num_rows == 0)) {
                 if ($stmt = $mysqli->prepare("INSERT INTO user (username, password, email, currency_id) VALUES (?,?,?,?)")) {
                     $stmt->bind_param("sssi", $username, $password_hash, $email, $currency_id);
-                    if ($stmt->execute()) $msgBox = alertBox($m_registersuccess);
-                    else $msgBox = alertBox($m_registererror);
+                    if ($stmt->execute()) {
+                        $msgBox = alertBox($m_registersuccess);
+                        echo '<META HTTP-EQUIV="Refresh" Content="0; URL=index.php">';
+                    }
+                    else {
+                        $msgBox = alertBox($m_registererror);
+                    }
                 }
                 else $msgBox = alertBox($m_registererror);
             } else {
