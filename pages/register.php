@@ -53,9 +53,11 @@ if (isset($_POST['register'])) {
 }
 ?>
 
-<?php if ($msgBox) {
-    echo $msgBox;
-} ?>
+<?php 
+// if ($msgBox) {
+//     echo $msgBox;
+// } 
+?>
 
 <form method="post" action="" role="form">
     <fieldset>
