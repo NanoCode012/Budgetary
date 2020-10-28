@@ -82,7 +82,7 @@ if (isset($_POST['register'])) {
                 $q = 'select id, name from currency;';
                 if ($result = $mysqli->query($q)) {
                     while ($row = $result->fetch_array()) {
-                        echo '<option value="' . $row[0] . '">' . $row[0] . '</option>';
+                        echo '<option value="' . $row[0] . '">' . $row[1] . '</option>';
                     }
                 } else {
                     echo 'Query error: ' . $mysqli->error;
