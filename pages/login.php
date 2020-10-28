@@ -26,8 +26,8 @@ if (isset($_POST['login'])) {
             $stmt->store_result();
             $stmt->fetch();
             if (($stmt->num_rows == 1) && (password_verify($password, $password_hash))) {
-                session_destroy();
-                session_start();
+                // session_destroy();
+                // session_start();
                 $_SESSION['user_id'] = $id;
                 $_SESSION['currency_id'] = $currency_id;
                 header('Location: ?p=dashboard');
