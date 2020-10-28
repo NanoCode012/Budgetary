@@ -3,8 +3,8 @@ include ('utils/functions.php');
 include ('utils/messages.php');
 ?>
 
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 
 <head>
     <!-- Required meta tags -->
