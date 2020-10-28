@@ -30,7 +30,7 @@ if (isset($_POST['login'])) {
                 session_start();
                 $_SESSION['user_id'] = $id;
                 $_SESSION['currency_id'] = $currency_id;
-                header('Location: index.php?p=dashboard');
+                header('Location: ?p=dashboard');
             } else {
                 $msgBox = alertBox($m_loginerror);
             }
