@@ -1,6 +1,6 @@
 <?php session_start();
 
-// If logged in //Fix if user logged in alr but not dashboard
+// If logged in
 if (isset($_SESSION['user_id'])) {
     if (!isset($_GET['p'])) {
         $page = 'dashboard';
