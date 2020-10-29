@@ -9,20 +9,26 @@ if (isset($_POST['register'])) {
         $_POST['username'] = trim($_POST['username']);
     }
 
-    if (!isset($_POST['password']) || trim($_POST['password']) == '') {
-        $msgBox = alertBox($m_emptypass);
-    } else {
-        $_POST['password'] = trim($_POST['password']);
+    if ($msgBox == '') {
+        if (!isset($_POST['password']) || trim($_POST['password']) == '') {
+            $msgBox = alertBox($m_emptypass);
+        } else {
+            $_POST['password'] = trim($_POST['password']);
+        }
     }
 
-    if (!isset($_POST['email']) || trim($_POST['email']) == '') {
-        $msgBox = alertBox($m_emptypass);
-    } else {
-        $_POST['email'] = trim($_POST['email']);
+    if ($msgBox == '') {
+        if (!isset($_POST['email']) || trim($_POST['email']) == '') {
+            $msgBox = alertBox($m_emptyemail);
+        } else {
+            $_POST['email'] = trim($_POST['email']);
+        }
     }
-
-    if (!isset($_POST['currency_id']) || trim($_POST['currency_id']) == '') {
-        $msgBox = alertBox($m_emptypass);
+    
+    if ($msgBox == '') {
+        if (!isset($_POST['currency_id']) || trim($_POST['currency_id']) == '') {
+            $msgBox = alertBox($m_emptycurrency);
+        }
     }
 
     if ($msgBox == '') {

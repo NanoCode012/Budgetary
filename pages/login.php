@@ -9,10 +9,12 @@ if (isset($_POST['login'])) {
         $_POST['username'] = trim($_POST['username']);
     }
 
-    if (!isset($_POST['password']) || trim($_POST['password']) == '') {
-        $msgBox = alertBox($m_emptypass);
-    } else {
-        $_POST['password'] = trim($_POST['password']);
+    if ($msgBox == '') {
+        if (!isset($_POST['password']) || trim($_POST['password']) == '') {
+            $msgBox = alertBox($m_emptypass);
+        } else {
+            $_POST['password'] = trim($_POST['password']);
+        }
     }
 
     if ($msgBox == '') {
