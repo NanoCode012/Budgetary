@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 29, 2020 at 07:53 AM
+-- Generation Time: Oct 30, 2020 at 09:52 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.9
 
@@ -54,6 +54,14 @@ CREATE TABLE `currency` (
   `relative` float NOT NULL,
   `time_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `currency`
+--
+
+INSERT INTO `currency` (`id`, `name`, `relative`, `time_modified`) VALUES
+(1, 'USD', 1, '2020-10-30 09:51:20'),
+(2, 'BAHT', 0.03125, '2020-10-30 09:51:46');
 
 -- --------------------------------------------------------
 
@@ -170,7 +178,7 @@ ALTER TABLE `budget`
 -- AUTO_INCREMENT for table `currency`
 --
 ALTER TABLE `currency`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `transaction`
