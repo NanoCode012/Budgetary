@@ -42,9 +42,9 @@ if (isset($_POST['login'])) {
 ?>
 
 <?php 
-// if ($msgBox) {
-//     echo $msgBox;
-// } 
+if ($msgBox) {
+    echo $msgBox;
+} 
 ?>
 
 <form method="post" action="" role="form">
