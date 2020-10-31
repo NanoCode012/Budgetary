@@ -10,7 +10,7 @@ $m_registererror = 'Cannot register';
 $m_registersuccess = 'Success register';
 
 // 404
-$m_pageunknown = 'Page cannot be found';
+$m_pageunknown = 'Page cannot be found. Auto redirecting ... \nError page: ';
 
 // Titles
 $m_username = 'Username';
