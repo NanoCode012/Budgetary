@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 30, 2020 at 09:52 AM
+-- Generation Time: Oct 31, 2020 at 06:32 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.9
 
@@ -20,7 +20,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `manager`
 --
-CREATE DATABASE IF NOT EXISTS `manager` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE DATABASE IF NOT EXISTS `manager` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `manager`;
 
 -- --------------------------------------------------------
@@ -39,7 +39,7 @@ CREATE TABLE `budget` (
   `start_time` datetime NOT NULL,
   `end_time` datetime NOT NULL,
   `time_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -53,7 +53,7 @@ CREATE TABLE `currency` (
   `name` varchar(255) NOT NULL,
   `relative` float NOT NULL,
   `time_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `currency`
@@ -79,7 +79,7 @@ CREATE TABLE `transaction` (
   `amount` float NOT NULL,
   `description` varchar(255) NOT NULL,
   `time_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -95,7 +95,7 @@ CREATE TABLE `user` (
   `email` varchar(255) NOT NULL,
   `currency_id` int(11) NOT NULL,
   `time_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Triggers `user`
@@ -120,7 +120,7 @@ CREATE TABLE `wallet` (
   `amount` float NOT NULL DEFAULT '0',
   `currency_id` int(11) NOT NULL,
   `time_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Indexes for dumped tables
