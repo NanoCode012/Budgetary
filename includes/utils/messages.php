@@ -36,5 +36,5 @@ $m_addsuccess = 'Added';
 $m_adderror = 'Fail to add';
 
 //Misc
-$m_back = 'Back'
+$m_back = 'Back';
 ?>
