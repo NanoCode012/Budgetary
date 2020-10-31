@@ -34,4 +34,7 @@ $m_emptywallet = 'No wallet provided';
 $m_emptydescription = 'No description provided';
 $m_addsuccess = 'Added';
 $m_adderror = 'Fail to add';
+
+//Misc
+$m_back = 'Back'
 ?>
