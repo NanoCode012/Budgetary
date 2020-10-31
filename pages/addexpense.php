@@ -45,8 +45,8 @@ if (isset($_POST['add'])) {
         $description = $mysqli->real_escape_string($_POST['description']);
         
 
-        if ($stmt = $mysqli->prepare("INSERT INTO `transaction` (wallet_id, user_id, title, category, amount, description) VALUES (?,?,?,?,?,?)")) {
-            $stmt->bind_param("iissis", $wallet, $_SESSION['user_id'], $title, $category, $amount, $description);
+        if ($stmt = $mysqli->prepare("INSERT INTO `transaction` (user_id, wallet_id, title, category, amount, description) VALUES (?,?,?,?,?,?)")) {
+            $stmt->bind_param("iissis", $_SESSION['user_id'], $wallet, $title, $category, $amount, $description);
             if ($stmt->execute()) {
                 $msgBox = alertBox($m_addsuccess);
                 echo '<META HTTP-EQUIV="Refresh" Content="0; URL=index.php?p=expense">';
