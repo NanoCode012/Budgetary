@@ -6,4 +6,3 @@ include('includes/nav.php');
 include('includes/body.php');
 include('includes/foot.php');
 ?>
-

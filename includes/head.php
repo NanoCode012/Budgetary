@@ -19,4 +19,3 @@ include ('utils/messages.php');
     <!-- <link rel="stylesheet" type="text/css" href="css/main.css"> -->
     <title><?php echo $servertitle; ?></title>
 </head>
-
