@@ -58,6 +58,12 @@ if (isset($_POST['add'])) {
 }
 ?>
 
+<?php 
+if ($msgBox) {
+    echo $msgBox;
+} 
+?>
+
 <form method="post" action="" role="form">
     <fieldset>
         <div class="form-group">
