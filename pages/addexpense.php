@@ -30,9 +30,7 @@ if (isset($_POST['add'])) {
     }
 
     if ($msgBox == '') {
-        if (!isset($_POST['description']) || trim($_POST['description']) == '') {
-            $msgBox = alertBox($m_emptydescription);
-        } else {
+        if (isset($_POST['description'])) {
             $_POST['description'] = trim($_POST['description']);
         }
     }
@@ -106,5 +104,8 @@ if (isset($_POST['add'])) {
         <hr>
         <button type="submit" name="add" class="btn btn-success btn-block"><span class="glyphicon glyphicon-log-in"></span> <?php echo
                                                                                                                                 $m_add; ?></button>
+                                                                                                                                <hr>
+        <a href="?p=expense" class="btn btn-info btn-block"><span class="glyphicon glyphicon-log-in"></span> <?php echo
+                                                                                                                    $m_back; ?></a>
     </fieldset>
 </form>
