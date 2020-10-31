@@ -13,7 +13,8 @@
     <tbody>
         <?php
         $q = 'select t.id, t.wallet_id, w.name AS wallet_name, t.title, t.category, t.amount, t.description, t.time_created ' .
-            'from `transaction` t, wallet w where t.user_id = ' . $_SESSION['user_id'] . ' and t.wallet_id = w.id;';
+            'from `transaction` t, wallet w where t.user_id = ' . $_SESSION['user_id'] . ' and t.wallet_id = w.id ' .
+            'order by t.time_created DESC;';
         if ($result = $mysqli->query($q)) {
             while ($row = $result->fetch_array()) {
                 echo '<tr>';
