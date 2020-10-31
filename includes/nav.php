@@ -1,5 +1,7 @@
 <?php
 if (isset($_SESSION['user_id'])){
-    include('includes/nav-loggedin.php');
+    if ($page != 'logout') { //Don't show navbar when logged out
+        include('includes/nav-loggedin.php');
+    }
 }
 ?>
