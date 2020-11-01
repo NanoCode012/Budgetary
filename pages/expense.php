@@ -1,3 +1,4 @@
+<!-- Bootstrap Table CSS -->
 <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.css">
 
 <div><a class="btn btn-primary" href="?p=modexpense&type=add" role="button">Add expense</a></div>
@@ -55,4 +56,6 @@
         </tbody>
     </table>
 </div>
+
+<!-- Bootstrap Table JS -->
 <script src="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.js"></script>
