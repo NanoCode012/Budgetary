@@ -121,8 +121,8 @@ if (isset($_POST['add'])) {
         </div>
 
         <hr>
-        <button type="submit" name="add" class="btn btn-success btn-block"><span class="glyphicon glyphicon-log-in"></span> <?php echo $m_add; ?></button>
+        <button type="submit" name="add" class="btn btn-success btn-block"><?php echo $m_add; ?></button>
                                                                                                                                 <hr>
-        <a href="?p=expense" class="btn btn-info btn-block"><span class="glyphicon glyphicon-log-in"></span> <?php echo $m_back; ?></a>
+        <a href="?p=expense" class="btn btn-info btn-block"><?php echo $m_back; ?></a>
     </fieldset>
 </form>

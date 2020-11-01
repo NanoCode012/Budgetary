@@ -119,9 +119,9 @@ if (isset($_POST['register'])) {
         </div>
 
         <hr>
-        <button type="submit" name="register" class="btn btn-info btn-block"><span class="glyphicon glyphicon-pencil"></span> <?php echo $m_register; ?></button>
+        <button type="submit" name="register" class="btn btn-info btn-block"> <?php echo $m_register; ?></button>
 
         <hr>
-        <a href="?p=login" class="btn btn-success btn-block"><span class="glyphicon glyphicon-log-in"></span> <?php echo $m_login; ?></a>
+        <a href="?p=login" class="btn btn-success btn-block"> <?php echo $m_login; ?></a>
     </fieldset>
 </form>
