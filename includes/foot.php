@@ -6,4 +6,4 @@
 </body>
 </html>
 
-<?php $mysqli->close() ?>
+<?php $mysqli->close(); ?>

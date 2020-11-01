@@ -1,8 +1,8 @@
 <?php
-$dbhost = "localhost";
-$dbuser = "siit";
-$dbpass = "siitonly";
-$accdb = "manager";
+$dbhost = 'localhost';
+$dbuser = 'siit';
+$dbpass = 'siitonly';
+$accdb = 'manager';
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 $mysqli = mysqli_connect($dbhost, $dbuser, $dbpass, $accdb);
