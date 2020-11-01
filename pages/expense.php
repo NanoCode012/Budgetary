@@ -1,14 +1,26 @@
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.css">
+
 <div><a class="btn btn-primary" href="?p=modexpense&type=add" role="button">Add expense</a></div>
 <div class="table-responsive-sm">
-    <table class='table table-striped table-hover'>
+    <table 
+        class='table table-striped table-hover' 
+        data-toggle="table" 
+        
+        data-sort-name="name"
+        data-sort-order="desc" 
+        
+        data-pagination="true" 
+        data-page-size="10" 
+        
+        data-search="true">
         <thead class='thread thead-light'>
             <tr>
-                <th scope="col">Title</th>
-                <th scope="col">Category</th>
-                <th scope="col">Amount</th>
-                <th scope="col">Wallet</th>
-                <th scope="col">Description</th>
-                <th scope="col">DateTime</th>
+                <th scope="col" data-field="title" data-sortable="true">Title</th>
+                <th scope="col" data-field="category" data-sortable="true">Category</th>
+                <th scope="col" data-field="amount" data-sortable="true">Amount</th>
+                <th scope="col" data-field="wallet" data-sortable="true">Wallet</th>
+                <th scope="col" data-field="description" data-sortable="true">Description</th>
+                <th scope="col" data-field="datetime" data-sortable="true">DateTime</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
@@ -29,7 +41,11 @@
                     echo '<td>' . $row['wallet_name'] . '</td>';
                     echo '<td>' . $row['description'] . '</td>';
                     echo '<td>' . $row['time_created'] . '</td>';
-                    echo '<td>' . editButton($row['id']) . '&nbsp' . deleteButton($row['id']) . '</td>';
+                    echo '<td>' .
+                        editButton($row['id']) .
+                        '&nbsp' .
+                        deleteButton($row['id']) .
+                        '</td>';
                     echo '</tr>';
                 }
             } else {
@@ -39,3 +55,4 @@
         </tbody>
     </table>
 </div>
+<script src="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.js"></script>
