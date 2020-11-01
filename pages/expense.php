@@ -1,7 +1,7 @@
 <div><a class="btn btn-primary" href="?p=modexpense&type=add" role="button">Add expense</a></div>
 <div class="table-responsive-sm">
-    <table class='table'>
-        <thead>
+    <table class='table table-striped table-hover'>
+        <thead class='thread thead-light'>
             <tr>
                 <th scope="col">Title</th>
                 <th scope="col">Category</th>
