@@ -4,20 +4,22 @@
 if (isset($_SESSION['user_id'])) {
     if (!isset($_GET['p'])) {
         $page = 'dashboard';
-    }
-    else {
+    } else {
         $page = $_GET['p'];
     }
 }
 // If not logged in
 else {
-    if (isset($_GET['p']) && in_array($_GET['p'], array('login', 'logout', 'register'))) {
+    if (
+        isset($_GET['p']) &&
+        in_array($_GET['p'], ['login', 'logout', 'register'])
+    ) {
         $page = $_GET['p'];
     } else {
         $page = 'login';
     }
 }
 
-$servertitle = "Budgetary"  . " | " . ucwords($page);
+$servertitle = 'Budgetary' . ' | ' . ucwords($page);
 
 ?>
