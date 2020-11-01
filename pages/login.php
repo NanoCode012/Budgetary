@@ -64,8 +64,8 @@ if (isset($_POST['login'])) {
         </div>
 
         <hr>
-        <button type="submit" name="login" class="btn btn-success btn-block"><span class="glyphicon glyphicon-log-in"></span> <?php echo $m_login; ?></button>
+        <button type="submit" name="login" class="btn btn-success btn-block"><?php echo $m_login; ?></button>
         <hr>
-        <a href="?p=register" class="btn btn-info btn-block"> <span class="glyphicon glyphicon-pencil"></span> <?php echo $m_register; ?></a>
+        <a href="?p=register" class="btn btn-info btn-block"><?php echo $m_register; ?></a>
     </fieldset>
 </form>
