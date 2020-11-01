@@ -27,13 +27,18 @@ $m_description = 'Description';
 
 // Expenses
 $m_add = 'Add';
+$m_save = 'Save';
 $m_emptytitle = 'No title provided';
 $m_emptycategory = 'No category provided';
 $m_emptyamount = 'No amount provided';
 $m_emptywallet = 'No wallet provided';
 $m_emptydescription = 'No description provided';
 $m_addsuccess = 'Added';
-$m_adderror = 'Fail to add';
+$m_adderror = 'Failed to add';
+$m_savesuccess = 'Saved';
+$m_saveerror = 'Failed to save';
+$m_deletesuccess = 'Delete successful';
+$m_deleteerror = 'Failed to delete';
 
 //Misc
 $m_back = 'Back';
