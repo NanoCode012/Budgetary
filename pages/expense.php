@@ -1,4 +1,4 @@
-<div><a class="btn btn-primary" href="?p=addexpense" role="button">Add expense</a></div>
+<div><a class="btn btn-primary" href="?p=modexpense&type=add" role="button">Add expense</a></div>
 <div class="table-responsive-sm">
     <table class='table'>
         <thead>
@@ -9,6 +9,7 @@
                 <th scope="col">Wallet</th>
                 <th scope="col">Description</th>
                 <th scope="col">DateTime</th>
+                <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -28,6 +29,7 @@
                     echo '<td>' . $row['wallet_name'] . '</td>';
                     echo '<td>' . $row['description'] . '</td>';
                     echo '<td>' . $row['time_created'] . '</td>';
+                    echo '<td>' . editButton($row['id']) . '&nbsp' . deleteButton($row['id']) . '</td>';
                     echo '</tr>';
                 }
             } else {
