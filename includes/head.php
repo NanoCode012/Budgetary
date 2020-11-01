@@ -1,6 +1,6 @@
 <?php
-include ('utils/functions.php');
-include ('utils/messages.php');
+include 'utils/functions.php';
+include 'utils/messages.php';
 ?>
 
 <!doctype html>
