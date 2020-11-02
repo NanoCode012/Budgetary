@@ -87,7 +87,7 @@ if (isset($_POST['register'])) {
         <div class="form-group">
             <label for="currency_id"><?php echo $m_currency; ?></label>
 
-            <select name="currency_id">
+            <select class="form-control" name="currency_id">
                 <?php
                 $q = 'select id, name from currency;';
                 if ($rows = $db->run($q)) {
