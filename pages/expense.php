@@ -42,9 +42,9 @@
                     echo '<td>' . $row['description'] . '</td>';
                     echo '<td>' . $row['time_created'] . '</td>';
                     echo '<td>' .
-                        editButton($row['id']) .
+                        editButton('expense', $row['id']) .
                         '&nbsp' .
-                        deleteButton($row['id']) .
+                        deleteButton('expense', $row['id']) .
                         '</td>';
                     echo '</tr>';
                 }
