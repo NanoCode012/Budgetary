@@ -1,0 +1,5 @@
+{
+    "require": {
+        "paragonie/easydb": "^2"
+    }
+}

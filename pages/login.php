@@ -6,35 +6,28 @@ if (isset($_POST['login'])) {
     if (!isset($_POST['username']) || trim($_POST['username']) == '') {
         $msgBox = alertBox($m_emptyusername);
     } else {
-        $_POST['username'] = trim($_POST['username']);
+        $username = trim($_POST['username']);
     }
 
     if ($msgBox == '') {
         if (!isset($_POST['password']) || trim($_POST['password']) == '') {
             $msgBox = alertBox($m_emptypass);
         } else {
-            $_POST['password'] = trim($_POST['password']);
+            $password = trim($_POST['password']);
         }
     }
 
     if ($msgBox == '') {
-        $username = $mysqli->real_escape_string($_POST['username']);
-        $password = $mysqli->real_escape_string($_POST['password']);
-
         if (
-            $stmt = $mysqli->prepare(
-                'SELECT id, password, currency_id from user WHERE username = ?'
+            $result = $db->row(
+                'SELECT id, password, currency_id from user WHERE username = ?',
+                $username
             )
         ) {
-            $stmt->bind_param('s', $username);
-            $stmt->execute();
-            $stmt->bind_result($id, $password_hash, $currency_id);
-            $stmt->store_result();
-            $stmt->fetch();
-            if (
-                $stmt->num_rows == 1 &&
-                password_verify($password, $password_hash)
-            ) {
+            $id = $result['id'];
+            $password_hash = $result['password'];
+            $currency_id = $result['currency_id'];
+            if (password_verify($password, $password_hash)) {
                 session_destroy();
                 session_start();
                 $_SESSION['user_id'] = $id;
@@ -43,6 +36,8 @@ if (isset($_POST['login'])) {
             } else {
                 $msgBox = alertBox($m_loginerror);
             }
+        } else {
+            $msgBox = alertBox($m_loginerror);
         }
     }
 }
