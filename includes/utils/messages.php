@@ -40,6 +40,9 @@ $m_saveerror = 'Failed to save';
 $m_deletesuccess = 'Delete successful';
 $m_deleteerror = 'Failed to delete';
 
+// Wallets
+$m_walletname = 'Name';
+
 //Misc
 $m_back = 'Back';
 ?>
