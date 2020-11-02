@@ -6,4 +6,5 @@
 </body>
 </html>
 
-<?php $mysqli->close(); ?>
+<?php $db = null;
+?>

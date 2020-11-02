@@ -14,8 +14,7 @@ try {
         $dbuser,
         $dbpass,
     ]);
-}
-catch (Exception $e) {
+} catch (Exception $e) {
     exit('Caught exception when trying to connect to db ' . $e->getMessage());
 }
 

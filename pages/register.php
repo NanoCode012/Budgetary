@@ -6,14 +6,14 @@ if (isset($_POST['register'])) {
     if (!isset($_POST['username']) || trim($_POST['username']) == '') {
         $msgBox = alertBox($m_emptyusername);
     } else {
-        $_POST['username'] = trim($_POST['username']);
+        $username = trim($_POST['username']);
     }
 
     if ($msgBox == '') {
         if (!isset($_POST['password']) || trim($_POST['password']) == '') {
             $msgBox = alertBox($m_emptypass);
         } else {
-            $_POST['password'] = trim($_POST['password']);
+            $password = trim($_POST['password']);
         }
     }
 
@@ -21,7 +21,7 @@ if (isset($_POST['register'])) {
         if (!isset($_POST['email']) || trim($_POST['email']) == '') {
             $msgBox = alertBox($m_emptyemail);
         } else {
-            $_POST['email'] = trim($_POST['email']);
+            $email = trim($_POST['email']);
         }
     }
 
@@ -31,43 +31,30 @@ if (isset($_POST['register'])) {
             trim($_POST['currency_id']) == ''
         ) {
             $msgBox = alertBox($m_emptycurrency);
+        } else {
+            $currency_id = $_POST['currency_id'];
         }
     }
 
     if ($msgBox == '') {
-        $username = $mysqli->real_escape_string($_POST['username']);
-        $password = $mysqli->real_escape_string($_POST['password']);
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
-        $email = $mysqli->real_escape_string($_POST['email']);
-        $currency_id = $mysqli->real_escape_string($_POST['currency_id']);
 
         if (
-            $stmt = $mysqli->prepare('SELECT id from user WHERE username = ?')
+            $result = $db->cell(
+                'SELECT COUNT(id) from user WHERE username = ?',
+                $username
+            )
         ) {
-            $stmt->bind_param('s', $username);
-            $stmt->execute();
-            $stmt->bind_result($id);
-            $stmt->store_result();
-            $stmt->fetch();
-            if ($stmt->num_rows == 0) {
+            if ($result == 0) {
                 if (
-                    $stmt = $mysqli->prepare(
-                        'INSERT INTO user (username, password, email, currency_id) VALUES (?,?,?,?)'
-                    )
+                    $stmt = $db->insert('user', [
+                        'username' => $username,
+                        'password' => $password_hash,
+                        'email' => $email,
+                        'currency_id' => $currency_id,
+                    ])
                 ) {
-                    $stmt->bind_param(
-                        'sssi',
-                        $username,
-                        $password_hash,
-                        $email,
-                        $currency_id
-                    );
-                    if ($stmt->execute()) {
-                        $msgBox = alertBox($m_registersuccess);
-                        echo '<META HTTP-EQUIV="Refresh" Content="0; URL=index.php">';
-                    } else {
-                        $msgBox = alertBox($m_registererror);
-                    }
+                    $msgBox = alertBox($m_registersuccess, '?p=login');
                 } else {
                     $msgBox = alertBox($m_registererror);
                 }
@@ -103,16 +90,14 @@ if (isset($_POST['register'])) {
             <select name="currency_id">
                 <?php
                 $q = 'select id, name from currency;';
-                if ($result = $mysqli->query($q)) {
-                    while ($row = $result->fetch_array()) {
+                if ($rows = $db->run($q)) {
+                    foreach ($rows as $row) {
                         echo '<option value="' .
-                            $row[0] .
+                            $row['id'] .
                             '">' .
-                            $row[1] .
+                            $row['name'] .
                             '</option>';
                     }
-                } else {
-                    echo 'Query error: ' . $mysqli->error;
                 }
                 ?>
             </select>

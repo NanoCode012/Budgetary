@@ -12,12 +12,14 @@ if (isset($_POST['modify'])) {
     if (!isset($_POST['title']) || trim($_POST['title']) == '') {
         $msgBox = alertBox($m_emptytitle);
     } else {
-        $_POST['title'] = trim($_POST['title']);
+        $title = trim($_POST['title']);
     }
 
     if ($msgBox == '') {
         if (!isset($_POST['category'])) {
             $msgBox = alertBox($m_emptycategory);
+        } else {
+            $category = trim($_POST['category']);
         }
     }
 
@@ -25,119 +27,90 @@ if (isset($_POST['modify'])) {
         if (!isset($_POST['amount']) || trim($_POST['amount']) == '') {
             $msgBox = alertBox($m_emptyamount);
         } else {
-            $_POST['amount'] = trim($_POST['amount']);
+            $amount = trim($_POST['amount']);
         }
     }
 
     if ($msgBox == '') {
         if (!isset($_POST['wallet_id'])) {
             $msgBox = alertBox($m_emptywallet);
+        } else {
+            $wallet_id = trim($_POST['wallet_id']);
         }
     }
 
     if ($msgBox == '') {
         if (isset($_POST['description'])) {
-            $_POST['description'] = trim($_POST['description']);
+            $description = trim($_POST['description']);
         }
     }
 
     if ($msgBox == '') {
-        $title = $mysqli->real_escape_string($_POST['title']);
-        $category = $mysqli->real_escape_string($_POST['category']);
-        $amount = $mysqli->real_escape_string($_POST['amount']);
-        $wallet_id = $mysqli->real_escape_string($_POST['wallet_id']);
-        $description = $mysqli->real_escape_string($_POST['description']);
-
         if (isset($_GET['type']) && $_GET['type'] == 'add') {
             if (
-                $stmt = $mysqli->prepare(
-                    'INSERT INTO `transaction` (user_id, wallet_id, title, category, amount, description) VALUES (?,?,?,?,?,?)'
-                )
+                $stmt = $db->insert('transaction', [
+                    'user_id' => $_SESSION['user_id'],
+                    'wallet_id' => $wallet_id,
+                    'title' => $title,
+                    'category' => $category,
+                    'amount' => $amount,
+                    'description' => $description,
+                ])
             ) {
-                $stmt->bind_param(
-                    'iissis',
-                    $_SESSION['user_id'],
-                    $wallet_id,
-                    $title,
-                    $category,
-                    $amount,
-                    $description
-                );
-                if ($stmt->execute()) {
-                    $msgBox = alertBox($m_addsuccess, '?p=expense');
-                } else {
-                    $msgBox = alertBox($m_adderror);
-                }
+                $msgBox = alertBox($m_addsuccess, '?p=expense');
             } else {
                 $msgBox = alertBox($m_adderror);
             }
         } elseif (isset($_GET['type']) && $_GET['type'] == 'edit') {
-            $tid = $mysqli->real_escape_string($_GET['tid']);
+            $tid = trim($_GET['tid']);
 
             if (
-                $stmt = $mysqli->prepare(
-                    'UPDATE `transaction` SET wallet_id=?, title=?, category=?, amount=?, description=? WHERE id=? AND user_id=?;'
+                $stmt = $db->update(
+                    'transaction',
+                    [
+                        'wallet_id' => $wallet_id,
+                        'title' => $title,
+                        'category' => $category,
+                        'amount' => $amount,
+                        'description' => $description,
+                    ],
+                    ['id' => $_GET['tid'], 'user_id' => $_SESSION['user_id']]
                 )
             ) {
-                $stmt->bind_param(
-                    'issisii',
-                    $wallet_id,
-                    $title,
-                    $category,
-                    $amount,
-                    $description,
-                    $tid,
-                    $_SESSION['user_id']
-                );
-                if ($stmt->execute()) {
-                    $msgBox = alertBox($m_savesuccess, '?p=expense');
-                } else {
-                    $msgBox = alertBox($m_saveerror);
-                }
+                $msgBox = alertBox($m_savesuccess, '?p=expense');
             } else {
                 $msgBox = alertBox($m_saveerror);
             }
         }
     }
 } elseif (isset($_GET['type']) && isset($_GET['tid'])) {
-    $tid = $mysqli->real_escape_string($_GET['tid']);
-
     if ($_GET['type'] == 'delete') {
         if (
-            $stmt = $mysqli->prepare(
-                'DELETE FROM `transaction` WHERE id=? AND user_id=?;'
-            )
+            $stmt = $db->delete('transaction', [
+                'id' => $_GET['tid'],
+                'user_id' => $_SESSION['user_id'],
+            ])
         ) {
-            $stmt->bind_param('ii', $tid, $_SESSION['user_id']);
-            if ($stmt->execute()) {
-                $msgBox = alertBox($m_deletesuccess, '?p=expense');
-            } else {
-                $msgBox = alertBox($m_deleteerror);
-            }
+            $msgBox = alertBox($m_deletesuccess, '?p=expense');
         } else {
             $msgBox = alertBox($m_deleteerror);
         }
     } elseif ($_GET['type'] == 'edit') {
         if (
-            $stmt = $mysqli->prepare(
+            $results = $db->run(
                 'SELECT t.wallet_id, w.name, t.title, t.category, t.amount, t.description ' .
-                    'FROM `transaction` t, `wallet` w WHERE t.id=? AND t.user_id=? AND t.wallet_id = w.id;'
+                    'FROM `transaction` t, `wallet` w WHERE t.id=? AND t.user_id=? AND t.wallet_id = w.id;',
+                $_GET['tid'],
+                $_SESSION['user_id']
             )
         ) {
-            $stmt->bind_param('ii', $tid, $_SESSION['user_id']);
-            $stmt->execute();
-            $stmt->bind_result(
-                $v_wallet_id,
-                $v_wallet,
-                $v_title,
-                $v_category,
-                $v_amount,
-                $v_description
-            );
-            $stmt->store_result();
-            $stmt->fetch();
-        } else {
-            echo 'Query error: ' . $mysqli->error;
+            $result = $results[0];
+            $v_wallet_id = $result['wallet_id'];
+            $v_wallet = $result['name'];
+            $v_title = $result['title'];
+            $v_category = $result['category'];
+            $v_amount = $result['amount'];
+            $v_description = $result['description'];
         }
     }
 }
@@ -181,20 +154,15 @@ if (isset($_POST['modify'])) {
             <label for="wallet_id"><?php echo $m_wallet; ?></label>
             <select class="form-control" name="wallet_id">
                 <?php
-                $q =
-                    'select id, name from wallet where user_id = ' .
-                    $_SESSION['user_id'] .
-                    ';';
-                if ($result = $mysqli->query($q)) {
-                    while ($row = $result->fetch_array()) {
-                        echo '<option value="' . $row[0] . '" ';
-                        if ($v_wallet_id == $row[0]) {
+                $q = 'select id, name from wallet where user_id = ? ;';
+                if ($rows = $db->run($q, $_SESSION['user_id'])) {
+                    foreach ($rows as $row) {
+                        echo '<option value="' . $row['id'] . '" ';
+                        if ($v_wallet_id == $row['name']) {
                             echo 'selected';
                         }
-                        echo ' >' . $row[1] . '</option>';
+                        echo ' >' . $row['name'] . '</option>';
                     }
-                } else {
-                    echo 'Query error: ' . $mysqli->error;
                 }
                 ?>
             </select>
