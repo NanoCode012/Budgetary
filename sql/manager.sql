@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 31, 2020 at 06:32 AM
+-- Generation Time: Nov 03, 2020 at 03:53 PM
 -- Server version: 5.7.31
--- PHP Version: 7.4.9
+-- PHP Version: 7.4.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -41,6 +41,12 @@ CREATE TABLE `budget` (
   `time_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- RELATIONSHIPS FOR TABLE `budget`:
+--   `user_id`
+--       `user` -> `id`
+--
+
 -- --------------------------------------------------------
 
 --
@@ -54,6 +60,10 @@ CREATE TABLE `currency` (
   `relative` float NOT NULL,
   `time_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- RELATIONSHIPS FOR TABLE `currency`:
+--
 
 --
 -- Dumping data for table `currency`
@@ -72,14 +82,44 @@ INSERT INTO `currency` (`id`, `name`, `relative`, `time_modified`) VALUES
 DROP TABLE IF EXISTS `transaction`;
 CREATE TABLE `transaction` (
   `id` int(11) NOT NULL,
-  `wallet_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `wallet_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
   `category` varchar(255) NOT NULL,
   `amount` float NOT NULL,
   `description` varchar(255) NOT NULL,
   `time_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- RELATIONSHIPS FOR TABLE `transaction`:
+--   `user_id`
+--       `user` -> `id`
+--   `wallet_id`
+--       `wallet` -> `id`
+--
+
+--
+-- Triggers `transaction`
+--
+DROP TRIGGER IF EXISTS `Add expense`;
+DELIMITER $$
+CREATE TRIGGER `Add expense` AFTER INSERT ON `transaction` FOR EACH ROW UPDATE wallet SET amount = amount - NEW.amount WHERE id = NEW.wallet_id and user_id = NEW.user_id
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `Delete transaction`;
+DELIMITER $$
+CREATE TRIGGER `Delete transaction` AFTER DELETE ON `transaction` FOR EACH ROW UPDATE wallet SET amount = amount + OLD.amount WHERE user_id = OLD.user_id AND id = OLD.wallet_id
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `Update expense`;
+DELIMITER $$
+CREATE TRIGGER `Update expense` AFTER UPDATE ON `transaction` FOR EACH ROW BEGIN 
+    UPDATE wallet SET amount = amount + OLD.amount WHERE id = OLD.wallet_id and user_id = NEW.user_id;
+    UPDATE wallet SET amount = amount - NEW.amount WHERE id = NEW.wallet_id and user_id = NEW.user_id;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -96,6 +136,12 @@ CREATE TABLE `user` (
   `currency_id` int(11) NOT NULL,
   `time_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- RELATIONSHIPS FOR TABLE `user`:
+--   `currency_id`
+--       `currency` -> `id`
+--
 
 --
 -- Triggers `user`
@@ -121,6 +167,14 @@ CREATE TABLE `wallet` (
   `currency_id` int(11) NOT NULL,
   `time_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- RELATIONSHIPS FOR TABLE `wallet`:
+--   `user_id`
+--       `user` -> `id`
+--   `currency_id`
+--       `currency` -> `id`
+--
 
 --
 -- Indexes for dumped tables
