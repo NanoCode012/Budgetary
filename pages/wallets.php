@@ -35,9 +35,9 @@
                     echo '<td>' . $row['amount'] . '</td>';
                     echo '<td>' . $row['currency_name'] . '</td>';
                     echo '<td>' .
-                        editButton('wallets', $row['id']) .
+                        editButton('wallets', 'wid', $row['id']) .
                         '&nbsp' .
-                        deleteButton('wallets', $row['id']) .
+                        deleteButton('wallets', 'wid', $row['id']) .
                         '</td>';
                     echo '</tr>';
                 }

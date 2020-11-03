@@ -46,7 +46,7 @@ if (isset($_POST['modify'])) {
                 $msgBox = alertBox($m_adderror);
             }
         } elseif (isset($_GET['type']) && $_GET['type'] == 'edit') {
-            $tid = trim($_GET['tid']);
+            $wid = trim($_GET['wid']);
 
             if (
                 $stmt = $db->update(
@@ -56,7 +56,7 @@ if (isset($_POST['modify'])) {
                         'amount' => $amount,
                         'currency_id' => $currency_id,
                     ],
-                    ['id' => $_GET['tid'], 'user_id' => $_SESSION['user_id']]
+                    ['id' => $_GET['wid'], 'user_id' => $_SESSION['user_id']]
                 )
             ) {
                 $msgBox = alertBox($m_savesuccess, $back_rdr);
@@ -65,11 +65,11 @@ if (isset($_POST['modify'])) {
             }
         }
     }
-} elseif (isset($_GET['type']) && isset($_GET['tid'])) {
+} elseif (isset($_GET['type']) && isset($_GET['wid'])) {
     if ($_GET['type'] == 'delete') {
         if (
             $stmt = $db->delete('wallet', [
-                'id' => $_GET['tid'],
+                'id' => $_GET['wid'],
                 'user_id' => $_SESSION['user_id'],
             ])
         ) {
@@ -82,7 +82,7 @@ if (isset($_POST['modify'])) {
             $results = $db->run(
                 'SELECT w.name AS wallet_name, w.amount, w.currency_id, c.name AS currency_name ' .
                     'FROM currency c, wallet w where w.id = ? and w.user_id = ? and w.currency_id = c.id;',
-                $_GET['tid'],
+                $_GET['wid'],
                 $_SESSION['user_id']
             )
         ) {
@@ -131,7 +131,7 @@ if (isset($_POST['modify'])) {
 
         <hr>
         <button type="submit" name="modify" class="btn btn-success btn-block">
-            <?php if (isset($_GET['tid'])) {
+            <?php if (isset($_GET['wid'])) {
                 echo $m_save;
             } else {
                 echo $m_add;
