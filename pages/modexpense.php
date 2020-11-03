@@ -158,7 +158,7 @@ if (isset($_POST['modify'])) {
                 if ($rows = $db->run($q, $_SESSION['user_id'])) {
                     foreach ($rows as $row) {
                         echo '<option value="' . $row['id'] . '" ';
-                        if ($v_wallet_id == $row['name']) {
+                        if ($v_wallet_id == $row['id']) {
                             echo 'selected';
                         }
                         echo ' >' . $row['name'] . '</option>';
