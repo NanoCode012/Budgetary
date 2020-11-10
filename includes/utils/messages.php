@@ -39,6 +39,10 @@ $m_savesuccess = 'Saved';
 $m_saveerror = 'Failed to save';
 $m_deletesuccess = 'Delete successful';
 $m_deleteerror = 'Failed to delete';
+$m_recurring = 'Recurring';
+$m_recurringfrequency = 'Frequency';
+$m_recurringtimes = 'Repeat times';
+$m_emptyrecurring = 'No repeat times provided';
 
 // Wallets
 $m_walletname = 'Name';

@@ -40,25 +40,36 @@ if (isset($_POST['modify'])) {
     }
 
     if ($msgBox == '') {
-        if (isset($_POST['description'])) {
-            $description = trim($_POST['description']);
+        if (isset($_POST['recurring']) && !isset($_POST['recurring-times'])) {
+            $msgBox = alertBox($m_emptyrecurring);
+            $recurring_times = 0;
+        } else {
+            $recurring_times = $_POST['recurring-times'];
         }
     }
 
     if ($msgBox == '') {
+        if (isset($_POST['description'])) {
+            $description = trim($_POST['description']);
+        }
+    }
+    if ($msgBox == '') {
         if (isset($_GET['type']) && $_GET['type'] == 'add') {
-            if (
-                $stmt = $db->insert('transaction', [
-                    'user_id' => $_SESSION['user_id'],
-                    'wallet_id' => $wallet_id,
-                    'title' => $title,
-                    'category' => $category,
-                    'amount' => $amount,
-                    'description' => $description,
-                ])
-            ) {
+            try {
+                $db->run(
+                    "CALL `Add transaction`(?,?,?,?,?,?,?,?,?)",
+                    $_SESSION['user_id'],
+                    $wallet_id,
+                    $title,
+                    $category,
+                    $amount,
+                    $description,
+                    (isset($_POST['recurring']) ? 1 : 0),
+                    (isset($_POST['recurring']) ? $_POST['recurring-frequency']: ' '),
+                    (isset($_POST['recurring']) ? $recurring_times : 0)
+                );
                 $msgBox = alertBox($m_addsuccess, '?p=expense');
-            } else {
+            } catch (PDOException $exception) {
                 $msgBox = alertBox($m_adderror);
             }
         } elseif (isset($_GET['type']) && $_GET['type'] == 'edit') {
@@ -168,6 +179,22 @@ if (isset($_POST['modify'])) {
             </select>
         </div>
         <div class="form-group">
+            <label for="recurring"><?php echo $m_recurring; ?></label>
+            <input type="checkbox" id="recur" name="recurring" value="Yes">
+        </div>
+        <div class="form-group" id="recur-f" hidden>
+            <label for="recurring-frequency"><?php echo $m_recurringfrequency; ?></label>
+            <select class="form-control" name="recurring-frequency">
+                <option value="DAILY" selected>DAILY</option>
+                <option value="WEEKLY">WEEKLY</option>
+                <option value="MONTHLY">MONTHLY</option>
+            </select>
+        </div>
+        <div class="form-group" id="recur-t" hidden>
+            <label for="recurring-times"><?php echo $m_recurringtimes; ?></label>
+            <input class="form-control" placeholder="<?php echo $m_recurringtimes; ?>" name="recurring-times" type="number">
+        </div>
+        <div class="form-group">
             <label for="description"><?php echo $m_description; ?></label>
             <textarea class="form-control" placeholder="<?php echo $m_description; ?>" name="description" rows="3"><?php echo $v_description; ?></textarea>
         </div>
@@ -185,3 +212,13 @@ if (isset($_POST['modify'])) {
         <a href="?p=expense" class="btn btn-info btn-block"><?php echo $m_back; ?></a>
     </fieldset>
 </form>
+
+<script>
+    $(function() {
+        $('#recur').click(function() {
+            var checked = $('#recur').is(':checked');
+            $('#recur-f').prop('hidden', !checked);
+            $('#recur-t').prop('hidden', !checked);
+        })
+    });
+</script>
