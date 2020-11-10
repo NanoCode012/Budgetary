@@ -5,6 +5,7 @@
     if ($_GET['p'] != $page) {
         header('Location: index.php?p=' . $page);
     } else {
+        echo '<body>';
         include 'pages/' . $page . '.php';
     }
 } else {
