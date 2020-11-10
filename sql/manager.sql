@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 03, 2020 at 03:53 PM
+-- Generation Time: Nov 10, 2020 at 01:42 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.11
 
@@ -22,6 +22,40 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `manager` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `manager`;
+
+DELIMITER $$
+--
+-- Procedures
+--
+DROP PROCEDURE IF EXISTS `Add transaction`$$
+CREATE DEFINER=`siit`@`localhost` PROCEDURE `Add transaction` (IN `user_id` INT, IN `wallet_id` INT, IN `title` VARCHAR(255), IN `category` VARCHAR(255), IN `amount` FLOAT, IN `description` VARCHAR(255), IN `recurring` BOOLEAN, IN `recur_freq` VARCHAR(10), IN `recur_times` INT)  NO SQL
+BEGIN
+	IF recurring THEN
+    	SET @T = NOW();
+        SET @times = recur_times;
+        SET @i = 0;
+        my_loop: LOOP
+        	IF @i > @times THEN
+            	LEAVE my_loop;
+            END IF;
+            
+            INSERT INTO transaction (transaction.user_id, transaction.wallet_id, transaction.title, transaction.category, transaction.amount, transaction.description, transaction.time_created) VALUES (user_id, wallet_id, title, category, amount, description, @T);
+            
+            SET @i = @i + 1;
+            IF (recur_freq LIKE "WEEKLY") THEN
+                SET @T = DATE_ADD(@T, INTERVAL 1 WEEK);
+            ELSEIF (recur_freq LIKE "MONTHLY") THEN
+                SET @T = DATE_ADD(@T, INTERVAL 1 MONTH);
+            ELSEIF (recur_freq LIKE "DAILY") THEN
+                SET @T = DATE_ADD(@T, INTERVAL 1 DAY);
+            END IF;
+        END LOOP;
+    ELSE 
+    	INSERT INTO transaction (transaction.user_id, transaction.wallet_id, transaction.title, transaction.category, transaction.amount, transaction.description) VALUES (user_id, wallet_id, title, category, amount, description);
+    END IF;
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
