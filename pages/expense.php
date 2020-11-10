@@ -1,5 +1,4 @@
-<!-- Bootstrap Table CSS -->
-<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.css">
+
 
 <div class="wrapper ">
     <?php include 'includes/nav-side.php'; ?>

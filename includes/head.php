@@ -18,6 +18,9 @@ include 'utils/messages.php';
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
     <script src="https://kit.fontawesome.com/c7e4a0e972.js" crossorigin="anonymous"></script>
 
+    <!-- Bootstrap Table CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.css">
+
     <!-- Paper Kit CSS -->
     <link href="../assets/css/bootstrap.min.css" rel="stylesheet" />
     <!-- <link href="../assets/css2/paper-dashboard.css?v=2.0.0" rel="stylesheet" /> -->
