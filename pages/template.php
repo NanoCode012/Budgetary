@@ -1,4 +1,3 @@
-<!-- Placeholder Dashboard -->
 <div class="wrapper ">
     <?php include 'includes/nav-side.php' ?>
     <div class="main-panel" style="height: 100vh;">
