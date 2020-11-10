@@ -298,7 +298,7 @@
     position: relative;
     float: right;
     width: $sidebar-width;
-    background-color: #f4f3ef;;
+    background-color: $main-panel-col;
 
 
     @include transition (0.50s, cubic-bezier(0.685, 0.0473, 0.346, 1));
