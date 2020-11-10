@@ -44,3 +44,13 @@ $danger-color:              #e686f3 !default;
     background-color: $default-color;
     color: $white-color;
 }
+
+// Table and sidebar
+
+.table-responsive {
+    overflow: hidden;
+}
+
+.sidebar .sidebar-wrapper {
+    overflow: hidden;
+}
