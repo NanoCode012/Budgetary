@@ -23,6 +23,8 @@
 <!-- Control Center for Paper Dashboard: parallax effects, scripts for the example pages etc -->
 <script src="../assets/js/paper-dashboard.js?v=2.0.0" type="text/javascript"></script>
 
+<!-- Bootstrap Table JS -->
+<script src="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.js"></script>
 <!-- Placeholder<footer></footer> -->
 </body>
 </html>
