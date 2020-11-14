@@ -27,7 +27,7 @@
 <script src="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.js"></script>
 
 <!-- Custom -->
-<!-- <script src="./assets/js/custom.js" type="text/javascript"></script> -->
+<script src="./assets/js/custom.js" type="text/javascript"></script>
 <!-- Placeholder<footer></footer> -->
 </body>
 </html>
