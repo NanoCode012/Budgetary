@@ -89,9 +89,9 @@ if (isset($msgBox)) echo $msgBox;
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <div><button type="button" class="btn btn-outline-primary" 
+                                <div class="d-flex flex-row-reverse"><button type="button" class="btn btn-outline-primary" 
                                         data-toggle="modal" data-target="#Modal" data-type="create">Add expense
-                                        </button>
+                                        </button></div>
                                 <table class="table table-borderless" data-toggle="table" data-sort-name="name"
                                     data-sort-order="desc" data-pagination="true" data-page-size="10"
                                     data-search="true" data-search-selector="#searchInput">
