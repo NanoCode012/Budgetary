@@ -1,7 +1,6 @@
 <?php
 function alertBox($message, $ref = '#', $btnTxt = 'Close')
 {
-    $_POST = array();
     return  <<<HTML
             <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -30,6 +29,46 @@ function alertBox($message, $ref = '#', $btnTxt = 'Close')
             </script>
             HTML;
             
+}
+
+function success($message=''){
+    return <<<HTML
+            <script>
+            $(function () {
+                $.notify({
+                    title: 'SUCCESS',
+                    message: '{$message}'
+                },
+                {   
+                    type: 'success'
+                },
+                {
+                    newest_on_top: true
+                }
+                )
+            });
+            </script>
+            HTML;
+}
+
+function error($message=''){
+    return <<<HTML
+            <script>
+            $(function () {
+                $.notify({
+                    title: 'ERROR',
+                    message: '{$message}'
+                },
+                {   
+                    type: 'danger'
+                },
+                {
+                    newest_on_top: true
+                }
+                )
+            });
+            </script>
+            HTML;
 }
 
 function editButton($data)

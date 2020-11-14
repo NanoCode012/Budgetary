@@ -7,9 +7,9 @@ if (isset($_POST['delete'])) {
             'user_id' => $_SESSION['user_id'],
         ])
     ) {
-        $msgBox = alertBox($m_deletesuccess);
+        $msgBox = success($m_deletesuccess);
     } else {
-        $msgBox = alertBox($m_deleteerror);
+        $msgBox = error($m_deleteerror);
     }
 }
 
@@ -46,9 +46,9 @@ if (isset($_POST['create']) || isset($_POST['edit'])){
                     (isset($_POST['recurring']) ? $_POST['recurring-frequency']: ' '),
                     (isset($_POST['recurring']) ? $_POST['recurring-times'] : 0)
                 );
-                $msgBox = alertBox($m_addsuccess);
+                $msgBox = success($m_addsuccess);
             } catch (PDOException $exception) {
-                $msgBox = alertBox($m_adderror);
+                $msgBox = error($m_adderror);
             }
         }
         else { //Edit
@@ -65,9 +65,9 @@ if (isset($_POST['create']) || isset($_POST['edit'])){
                     ['id' => $_POST['id'], 'user_id' => $_SESSION['user_id']]
                 )
             ) {
-                $msgBox = alertBox($m_savesuccess);
+                $msgBox = success($m_savesuccess);
             } else  {
-                $msgBox = alertBox($m_saveerror);
+                $msgBox = error($m_saveerror);
             }
         }
     }
