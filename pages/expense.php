@@ -52,7 +52,7 @@ if (isset($_POST['create']) || isset($_POST['edit'])){
             }
         }
         else { //Edit
-            try { 
+            if ( 
                 $stmt = $db->update(
                     'transaction',
                     [
@@ -63,10 +63,10 @@ if (isset($_POST['create']) || isset($_POST['edit'])){
                         'description' => $dict['description'],
                     ],
                     ['id' => $_POST['id'], 'user_id' => $_SESSION['user_id']]
-                );
-             
+                )
+            ) {
                 $msgBox = alertBox($m_savesuccess);
-            } catch (PDOException $exception) {
+            } else  {
                 $msgBox = alertBox($m_saveerror);
             }
         }
