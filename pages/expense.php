@@ -1,3 +1,81 @@
+<?php 
+
+if (isset($_POST['delete'])) {
+    if (
+        $stmt = $db->delete('transaction', [
+            'id' => $_POST['id'],
+            'user_id' => $_SESSION['user_id'],
+        ])
+    ) {
+        $msgBox = alertBox($m_deletesuccess);
+    } else {
+        $msgBox = alertBox($m_deleteerror);
+    }
+}
+
+if (isset($_POST['create']) || isset($_POST['edit'])){
+    $dict = [
+        'title' => '0',
+        'category' => '0',
+        'amount' => '0',
+        'wallet_id' => '0',
+        'description' => '0',
+    ];
+
+    foreach ($dict as $key => $value) {
+        if ((!isset($_POST[$key]) || trim($_POST[$key]) == '') && ($key != 'description')) {
+            $msgBox = alertBox($key . ' error');
+            break;
+        } else {
+            $dict[$key] = trim($_POST[$key]);
+        }
+    }
+
+    if (!isset($msgBox)) {
+        if (isset($_POST['create'])) {
+            try {
+                $db->run(
+                    "CALL `Add transaction`(?,?,?,?,?,?,?,?,?)",
+                    $_SESSION['user_id'],
+                    $dict['wallet_id'],
+                    $dict['title'],
+                    $dict['category'],
+                    $dict['amount'],
+                    $dict['description'],
+                    (isset($_POST['recurring']) ? 1 : 0),
+                    (isset($_POST['recurring']) ? $_POST['recurring-frequency']: ' '),
+                    (isset($_POST['recurring']) ? $_POST['recurring-times'] : 0)
+                );
+                $msgBox = alertBox($m_addsuccess);
+            } catch (PDOException $exception) {
+                $msgBox = alertBox($m_adderror);
+            }
+        }
+        else { //Edit
+            try { 
+                $stmt = $db->update(
+                    'transaction',
+                    [
+                        'wallet_id' => $dict['wallet_id'],
+                        'title' => $dict['title'],
+                        'category' => $dict['category'],
+                        'amount' => $dict['amount'],
+                        'description' => $dict['description'],
+                    ],
+                    ['id' => $_POST['id'], 'user_id' => $_SESSION['user_id']]
+                );
+             
+                $msgBox = alertBox($m_savesuccess);
+            } catch (PDOException $exception) {
+                $msgBox = alertBox($m_saveerror);
+            }
+        }
+    }
+}
+
+if (isset($msgBox)) echo $msgBox;
+?>
+
 <div class="wrapper ">
     <?php include 'includes/nav-side.php'; ?>
     <div class="main-panel">
@@ -11,11 +89,12 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <div><a class="btn btn-primary" href="?p=modexpense&type=add" role="button">Add
-                                        expense</a></div>
+                                <div><button type="button" class="btn btn-outline-primary" 
+                                        data-toggle="modal" data-target="#Modal" data-type="create">Add expense
+                                        </button>
                                 <table class="table table-borderless" data-toggle="table" data-sort-name="name"
                                     data-sort-order="desc" data-pagination="true" data-page-size="10"
-                                    data-search="true">
+                                    data-search="true" data-search-selector="#searchInput">
                                     <thead class='text-primary'>
                                         <tr>
                                             <th scope="col" data-field="title" data-sortable="true">Title</th>
@@ -42,43 +121,20 @@
                                                 $_SESSION['user_id']
                                             )
                                         ) {
-                                            foreach ($rows as $row) {
-                                                echo '<tr>';
-                                                echo '<td>' .
-                                                    $row['title'] .
-                                                    '</td>';
-                                                echo '<td>' .
-                                                    $row['category'] .
-                                                    '</td>';
-                                                echo '<td>' .
-                                                    $row['amount'] .
-                                                    '</td>';
-                                                echo '<td>' .
-                                                    $row['wallet_name'] .
-                                                    '</td>';
-                                                echo '<td>' .
-                                                    $row['description'] .
-                                                    '</td>';
-                                                echo '<td>' .
-                                                    $row['time_created'] .
-                                                    '</td>';
-                                                echo '<td>' .
-                                                    editButton(
-                                                        'expense',
-                                                        'tid',
-                                                        $row['id']
-                                                    ) .
-                                                    '&nbsp' .
-                                                    deleteButton(
-                                                        'expense',
-                                                        'tid',
-                                                        $row['id']
-                                                    ) .
-                                                    '</td>';
-                                                echo '</tr>';
-                                            }
-                                        }
-                                        ?>
+                                            foreach ($rows as $row) { ?>
+                                        <tr>
+                                            <td><?php echo $row['title']; ?></td>
+                                            <td><?php echo $row['category']; ?></td>
+                                            <td><?php echo $row['amount']; ?></td>
+                                            <td><?php echo $row['wallet_name']; ?></td>
+                                            <td><?php echo $row['description']; ?></td>
+                                            <td><?php echo $row['time_created']; ?></td>
+                                            <td>
+                                                <?php echo editButton($row) .
+                                                                '&nbsp' . deleteButton($row['id']) ;?>
+                                            </td>
+                                        </tr>
+                                        <?php } } ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -89,3 +145,107 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="title"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form role="form" action="" method="post">
+            <div class="modal-body">
+                <fieldset>
+                    <div class="form-group mb-3 modal-title">
+                        <label for="title">Title</label>
+                        <input class="form-control" placeholder="Title" name="title" type="text">
+                    </div>
+                    <div class="form-group mb-3 modal-category">
+                    <label for="category">Category</label>
+                        <select class="form-control" name="category">
+                        <?php foreach ($categories as $category) {?>
+                            <option><?php echo $category; ?></option>
+                        <?php } ?>
+                        </select>
+                    </div>
+                    <div class="form-group mb-3 modal-amount">
+                        <label for="amount">Amount</label>
+                        <input class="form-control" placeholder="Amount" name="amount" type="text">
+                    </div>
+                    <div class="form-group mb-3 modal-wallet">
+                        <label for="wallet_id"><?php echo $m_wallet; ?></label>
+                        <select class="form-control" name="wallet_id">
+                            <?php
+                            $q = 'select id, name from wallet where user_id = ? ;';
+                            $rows = $db->run($q, $_SESSION['user_id']);
+                            foreach ($rows as $row) { ?>
+                                <option value="<?php echo $row['id']; ?>">
+                                    <?php echo $row['name']; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                    <div class="form-group recur">
+                        <label for="recurring"><?php echo $m_recurring; ?></label>
+                        <input type="checkbox" id="recur" name="recurring" value="Yes">
+                    </div>
+                    <div class="form-group" id="recur-f" hidden>
+                        <label for="recurring-frequency"><?php echo $m_recurringfrequency; ?></label>
+                        <select class="form-control" name="recurring-frequency">
+                            <option value="DAILY" selected>DAILY</option>
+                            <option value="WEEKLY">WEEKLY</option>
+                            <option value="MONTHLY">MONTHLY</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="recur-t" hidden>
+                        <label for="recurring-times"><?php echo $m_recurringtimes; ?></label>
+                        <input class="form-control" placeholder="<?php echo $m_recurringtimes; ?>" name="recurring-times" type="number">
+                    </div>
+                    <div class="form-group modal-description">
+                        <label for="description"><?php echo $m_description; ?></label>
+                        <textarea class="form-control" placeholder="<?php echo $m_description; ?>" name="description" rows="3"><?php //echo $v_description; ?></textarea>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <input name="id" hidden>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(function() {
+        $('#recur').click(function() {
+            var checked = $('#recur').is(':checked');
+            $('#recur-f').prop('hidden', !checked);
+            $('#recur-t').prop('hidden', !checked);
+        });
+
+        $('#Modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var data = button.data('service') // Extract info from data-* attributes
+            var type = button.data('type')
+            var modal = $(this)
+            
+            // Type: Edit
+            modal.find('#title').text(capitalizeFirstLetter(type));
+            modal.find('.modal-footer .btn-primary').attr('name', type)
+            if (type == 'edit') {
+                modal.find('.modal-footer input').val(data['id'])
+                modal.find('.modal-title input').val(data['title'])
+                modal.find('.modal-category select').val(data['category']).attr('selected','selected');
+                modal.find('.modal-amount input').val(data['amount'])
+                modal.find('.modal-wallet select').val(data['wallet_id']).attr('selected','selected');
+                modal.find('.modal-description textarea').val(data['description'])
+                modal.find('.recur').hide();
+            }
+            else if (type == 'create'){
+                modal.find('.recur').show();
+            }
+        });
+    });
+</script>

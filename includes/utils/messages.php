@@ -49,4 +49,7 @@ $m_walletname = 'Name';
 
 //Misc
 $m_back = 'Back';
+
+// Categories
+$categories = array('FOOD', 'RENT', 'UTLITIES', 'SHOPPING', 'ONLINE');
 ?>
