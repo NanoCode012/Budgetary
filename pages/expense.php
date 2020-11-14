@@ -94,7 +94,7 @@ if (isset($msgBox)) echo $msgBox;
                                         </button></div>
                                 <table class="table table-borderless" data-toggle="table" data-sort-name="name"
                                     data-sort-order="desc" data-pagination="true" data-page-size="10"
-                                    data-search="true" data-search-selector="#searchInput">
+                                    data-search="true" data-search-selector="#searchInput" data-header-style="headerStyle">
                                     <thead class='text-primary'>
                                         <tr>
                                             <th scope="col" data-field="title" data-sortable="true">Title</th>
@@ -248,4 +248,11 @@ if (isset($msgBox)) echo $msgBox;
             }
         });
     });
+
+    function headerStyle(column) {
+    return {
+        classes: 'bg-primary',
+        css: {color: 'white'}
+    }
+  }
 </script>
