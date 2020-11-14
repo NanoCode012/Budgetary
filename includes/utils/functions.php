@@ -79,10 +79,10 @@ function editButton($data)
                 HTML;
 }
 
-function deleteButton($id)
+function deleteButton($id, $action='')
 {
     return      <<<HTML
-                <form action="" method="post" role="form" style="display:inline;">
+                <form action="{$action}" method="post" role="form" style="display:inline;">
                     <input name="id" value="{$id}" hidden>
                     <button name="delete" type="submit" class="btn btn-outline-danger">
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
