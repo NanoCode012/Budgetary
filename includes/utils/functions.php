@@ -40,9 +40,7 @@ function success($message=''){
                     message: '{$message}'
                 },
                 {   
-                    type: 'success'
-                },
-                {
+                    type: 'success',
                     newest_on_top: true
                 }
                 )
@@ -60,9 +58,7 @@ function error($message=''){
                     message: '{$message}'
                 },
                 {   
-                    type: 'danger'
-                },
-                {
+                    type: 'danger',
                     newest_on_top: true
                 }
                 )
