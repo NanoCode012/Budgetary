@@ -5,24 +5,33 @@ if (isset($_POST['email'])) {
         $password_hash = password_hash($_POST['password'], PASSWORD_DEFAULT);
         $db->update(
             'user',
-            ['password' => $password_hash, 'email' => trim($_POST['email'])],
+            [
+                'password' => $password_hash,
+                'email' => trim($_POST['email']),
+                'currency_id' => $_POST['currency_id'],
+            ],
             ['id' => $_SESSION['user_id']]
         );
-    }
-    else {
+    } else {
         $db->update(
             'user',
-            ['email' => trim($_POST['email'])],
+            [
+                'email' => trim($_POST['email']),
+                'currency_id' => $_POST['currency_id'],
+            ],
             ['id' => $_SESSION['user_id']]
         );
     }
 }
 
-$row = $db->row(
-    'SELECT u.*, COUNT(*) AS num_transaction ' .
-        'FROM user u, transaction t WHERE u.id = ? AND u.id = t.user_id GROUP BY id',
+$row = $db->row('SELECT * FROM user WHERE id = ?', $_SESSION['user_id']);
+$num_transaction = $db->cell(
+    'SELECT COUNT(*) FROM transaction WHERE `user_id`=?',
     $_SESSION['user_id']
 );
+
+$q = 'select id, name from currency;';
+$currencies = $db->run($q);
 ?>
 <div class="wrapper ">
     <?php include 'includes/nav-side.php'; ?>
@@ -53,9 +62,8 @@ $row = $db->row(
                             <div class="button-container">
                                 <div class="row">
                                     <div class="col align-self-center">
-                                        <h5><?php echo $row[
-                                            'num_transaction'
-                                        ]; ?><br><small>Transactions</small></h5>
+                                        <h5><?php echo $num_transaction; ?><br>
+                                        <small>Transactions</small></h5>
                                     </div>
                                 </div>
                             </div>
@@ -96,13 +104,39 @@ $row = $db->row(
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-8 pr-1">
                                         <div class="form-group">
                                             <label>Email</label>
                                             <input type="email" name="email" class="form-control" placeholder="Email"
                                                 value="<?php echo $row[
                                                     'email'
                                                 ]; ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 pl-1">
+                                        <div class="form-group">
+                                            <label>Default currency</label>
+                                            <select class="form-control" name="currency_id">
+                                                <?php foreach (
+                                                    $currencies
+                                                    as $currency
+                                                ) { ?>
+                                                    <option value=<?php
+                                                    echo '"' .
+                                                        $currency['id'] .
+                                                        '"';
+                                                    if (
+                                                        $currency['id'] ==
+                                                        $row['currency_id']
+                                                    ) {
+                                                        echo 'selected';
+                                                    }
+                                                    ?>>
+                                                    <?php echo $currency[
+                                                        'name'
+                                                    ]; ?> </option>
+                                                <?php } ?>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
