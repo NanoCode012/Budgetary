@@ -1,224 +1,82 @@
-<?php
+<?php 
+include 'config/dbconf.php';
 
-$msgBox = '';
-$v_wallet_id = '';
-$v_wallet = '';
-$v_title = '';
-$v_category = '';
-$v_amount = '';
-$v_description = '';
-
-if (isset($_POST['modify'])) {
-    if (!isset($_POST['title']) || trim($_POST['title']) == '') {
-        $msgBox = alertBox($m_emptytitle);
+if (isset($_POST['delete'])) {
+    if (
+        $stmt = $db->delete('transaction', [
+            'id' => $_POST['id'],
+            'user_id' => $_SESSION['user_id'],
+        ])
+    ) {
+        $msgBox = success($m_deletesuccess);
     } else {
-        $title = trim($_POST['title']);
+        $msgBox = error($m_deleteerror);
     }
+}
 
-    if ($msgBox == '') {
-        if (!isset($_POST['category'])) {
-            $msgBox = alertBox($m_emptycategory);
+if (isset($_POST['create']) || isset($_POST['edit'])){
+    $dict = [
+        'title' => '0',
+        'category' => '0',
+        'amount' => '0',
+        'wallet_id' => '0',
+        'description' => '0',
+    ];
+
+    foreach ($dict as $key => $value) {
+        if ((!isset($_POST[$key]) || trim($_POST[$key]) == '') && ($key != 'description')) {
+            $msgBox = alertBox($key . ' error');
+            break;
         } else {
-            $category = trim($_POST['category']);
+            $dict[$key] = trim($_POST[$key]);
         }
     }
 
-    if ($msgBox == '') {
-        if (!isset($_POST['amount']) || trim($_POST['amount']) == '') {
-            $msgBox = alertBox($m_emptyamount);
-        } else {
-            $amount = trim($_POST['amount']);
-        }
-    }
-
-    if ($msgBox == '') {
-        if (!isset($_POST['wallet_id'])) {
-            $msgBox = alertBox($m_emptywallet);
-        } else {
-            $wallet_id = trim($_POST['wallet_id']);
-        }
-    }
-
-    if ($msgBox == '') {
-        if (isset($_POST['recurring']) && !isset($_POST['recurring-times'])) {
-            $msgBox = alertBox($m_emptyrecurring);
-            $recurring_times = 0;
-        } else {
-            $recurring_times = $_POST['recurring-times'];
-        }
-    }
-
-    if ($msgBox == '') {
-        if (isset($_POST['description'])) {
-            $description = trim($_POST['description']);
-        }
-    }
-    if ($msgBox == '') {
-        if (isset($_GET['type']) && $_GET['type'] == 'add') {
+    if (!isset($msgBox)) {
+        if (isset($_POST['create'])) {
             try {
                 $db->run(
                     "CALL `Add transaction`(?,?,?,?,?,?,?,?,?)",
                     $_SESSION['user_id'],
-                    $wallet_id,
-                    $title,
-                    $category,
-                    $amount,
-                    $description,
+                    $dict['wallet_id'],
+                    $dict['title'],
+                    $dict['category'],
+                    $dict['amount'],
+                    $dict['description'],
                     (isset($_POST['recurring']) ? 1 : 0),
                     (isset($_POST['recurring']) ? $_POST['recurring-frequency']: ' '),
-                    (isset($_POST['recurring']) ? $recurring_times : 0)
+                    (isset($_POST['recurring']) ? $_POST['recurring-times'] : 0)
                 );
-                $msgBox = alertBox($m_addsuccess, '?p=expense');
+                $msgBox = success($m_addsuccess);
             } catch (PDOException $exception) {
-                $msgBox = alertBox($m_adderror);
+                $msgBox = error($m_adderror);
             }
-        } elseif (isset($_GET['type']) && $_GET['type'] == 'edit') {
-            $tid = trim($_GET['tid']);
-
-            if (
+        }
+        else if (isset($_POST['edit'])){ //Edit
+            if ( 
                 $stmt = $db->update(
                     'transaction',
                     [
-                        'wallet_id' => $wallet_id,
-                        'title' => $title,
-                        'category' => $category,
-                        'amount' => $amount,
-                        'description' => $description,
+                        'wallet_id' => $dict['wallet_id'],
+                        'title' => $dict['title'],
+                        'category' => $dict['category'],
+                        'amount' => $dict['amount'],
+                        'description' => $dict['description'],
                     ],
-                    ['id' => $_GET['tid'], 'user_id' => $_SESSION['user_id']]
+                    ['id' => $_POST['id'], 'user_id' => $_SESSION['user_id']]
                 )
             ) {
-                $msgBox = alertBox($m_savesuccess, '?p=expense');
-            } else {
-                $msgBox = alertBox($m_saveerror);
+                $msgBox = success($m_savesuccess);
+            } else  {
+                $msgBox = error($m_saveerror);
             }
         }
     }
-} elseif (isset($_GET['type']) && isset($_GET['tid'])) {
-    if ($_GET['type'] == 'delete') {
-        if (
-            $stmt = $db->delete('transaction', [
-                'id' => $_GET['tid'],
-                'user_id' => $_SESSION['user_id'],
-            ])
-        ) {
-            $msgBox = alertBox($m_deletesuccess, '?p=expense');
-        } else {
-            $msgBox = alertBox($m_deleteerror);
-        }
-    } elseif ($_GET['type'] == 'edit') {
-        if (
-            $results = $db->run(
-                'SELECT t.wallet_id, w.name, t.title, t.category, t.amount, t.description ' .
-                    'FROM `transaction` t, `wallet` w WHERE t.id=? AND t.user_id=? AND t.wallet_id = w.id;',
-                $_GET['tid'],
-                $_SESSION['user_id']
-            )
-        ) {
-            $result = $results[0];
-            $v_wallet_id = $result['wallet_id'];
-            $v_wallet = $result['name'];
-            $v_title = $result['title'];
-            $v_category = $result['category'];
-            $v_amount = $result['amount'];
-            $v_description = $result['description'];
-        }
-    }
 }
+
+if ($_POST){
+    if (isset($msgBox))  $_SESSION['msgBox'] =  $msgBox;
+    header( "Location: ?p=expense", true, 303 );
+}
+exit();
 ?>
-
-<?php if ($msgBox) {
-    echo $msgBox;
-} ?>
-
-<form method="post" action="" role="form">
-    <fieldset>
-        <div class="form-group">
-            <label for="title"><?php echo $m_title; ?></label>
-            <input class="form-control" placeholder="<?php echo $m_title; ?>" name="title" type="text" value="<?php echo $v_title; ?>" autofocus>
-        </div>
-        <div class="form-group">
-            <label for="category"><?php echo $m_category; ?></label>
-            <select class="form-control" name="category">
-                <option value='FOOD' <?php if ($v_category == 'FOOD') {
-                    echo 'selected';
-                } ?>>FOOD</option>
-                <option value='RENT' <?php if ($v_category == 'RENT') {
-                    echo 'selected';
-                } ?>>RENT</option>
-                <option value='UTLITIES' <?php if ($v_category == 'UTLITIES') {
-                    echo 'selected';
-                } ?>>UTLITIES</option>
-                <option value='SHOPPING' <?php if ($v_category == 'SHOPPING') {
-                    echo 'selected';
-                } ?>>SHOPPING</option>
-                <option value='ONLINE' <?php if ($v_category == 'ONLINE') {
-                    echo 'selected';
-                } ?>>ONLINE</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="amount"><?php echo $m_amount; ?></label>
-            <input class="form-control" placeholder="<?php echo $m_amount; ?>" name="amount" type="number" value="<?php echo $v_amount; ?>">
-        </div>
-        <div class="form-group">
-            <label for="wallet_id"><?php echo $m_wallet; ?></label>
-            <select class="form-control" name="wallet_id">
-                <?php
-                $q = 'select id, name from wallet where user_id = ? ;';
-                if ($rows = $db->run($q, $_SESSION['user_id'])) {
-                    foreach ($rows as $row) {
-                        echo '<option value="' . $row['id'] . '" ';
-                        if ($v_wallet_id == $row['id']) {
-                            echo 'selected';
-                        }
-                        echo ' >' . $row['name'] . '</option>';
-                    }
-                }
-                ?>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="recurring"><?php echo $m_recurring; ?></label>
-            <input type="checkbox" id="recur" name="recurring" value="Yes">
-        </div>
-        <div class="form-group" id="recur-f" hidden>
-            <label for="recurring-frequency"><?php echo $m_recurringfrequency; ?></label>
-            <select class="form-control" name="recurring-frequency">
-                <option value="DAILY" selected>DAILY</option>
-                <option value="WEEKLY">WEEKLY</option>
-                <option value="MONTHLY">MONTHLY</option>
-            </select>
-        </div>
-        <div class="form-group" id="recur-t" hidden>
-            <label for="recurring-times"><?php echo $m_recurringtimes; ?></label>
-            <input class="form-control" placeholder="<?php echo $m_recurringtimes; ?>" name="recurring-times" type="number">
-        </div>
-        <div class="form-group">
-            <label for="description"><?php echo $m_description; ?></label>
-            <textarea class="form-control" placeholder="<?php echo $m_description; ?>" name="description" rows="3"><?php echo $v_description; ?></textarea>
-        </div>
-
-        <hr>
-        <button type="submit" name="modify" class="btn btn-success btn-block">
-            <?php if (isset($_GET['tid'])) {
-                echo $m_save;
-            } else {
-                echo $m_add;
-            } ?>
-        </button>
-
-        <hr>
-        <a href="?p=expense" class="btn btn-info btn-block"><?php echo $m_back; ?></a>
-    </fieldset>
-</form>
-
-<script>
-    $(function() {
-        $('#recur').click(function() {
-            var checked = $('#recur').is(':checked');
-            $('#recur-f').prop('hidden', !checked);
-            $('#recur-t').prop('hidden', !checked);
-        })
-    });
-</script>

@@ -13,8 +13,19 @@ include 'utils/messages.php';
 
     <meta name="description" content="Budgetary | Site for managing money">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <!--     Fonts and icons     -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+    <script src="https://kit.fontawesome.com/c7e4a0e972.js" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap Table CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.css">
+
+    <!-- Paper Kit CSS -->
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- <link href="../assets/css2/paper-dashboard.css?v=2.0.0" rel="stylesheet" /> -->
+    <!-- <link href="../assets/css/custom.css" rel="stylesheet" /> -->
+    <link href="./assets/css/custom.css" rel="stylesheet" />
 
     <!-- <link rel="stylesheet" type="text/css" href="css/main.css"> -->
 
