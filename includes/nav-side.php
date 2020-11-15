@@ -30,7 +30,7 @@
             <li <?php if ($page == 'wallets') echo 'class="active"'; ?>>
                 <a href="?p=wallets">
                     <i class="nc-icon nc-pin-3"></i>
-                    <p>Wallet</p>
+                    <p>Wallets</p>
                 </a>
             </li>
             <li <?php if ($page == 'settings') echo 'class="active"'; ?>>
