@@ -17,25 +17,31 @@
         <ul class="nav">
             <li <?php if ($page == 'dashboard') echo 'class="active"'; ?>>
                 <a href="?p=dashboard">
-                    <i class="nc-icon nc-bank"></i>
+                    <i class="fas fa-chart-line"></i>
                     <p>Dashboard</p>
                 </a>
             </li>
             <li <?php if ($page == 'expense') echo 'class="active"'; ?>>
                 <a href="?p=expense">
-                    <i class="nc-icon nc-diamond"></i>
+                    <i class="fas fa-coins"></i>
                     <p>Expense</p>
                 </a>
             </li>
             <li <?php if ($page == 'wallets') echo 'class="active"'; ?>>
                 <a href="?p=wallets">
-                    <i class="nc-icon nc-pin-3"></i>
+                    <i class="fas fa-wallet"></i>
                     <p>Wallets</p>
+                </a>
+            </li>
+            <li <?php if ($page == 'budget') echo 'class="active"'; ?>>
+                <a href="?p=budget">
+                    <i class="fas fa-piggy-bank"></i>
+                    <p>Budget</p>
                 </a>
             </li>
             <li <?php if ($page == 'settings') echo 'class="active"'; ?>>
                 <a href="?p=settings">
-                    <i class="nc-icon nc-pin-3"></i>
+                    <i class="fas fa-user-cog"></i>
                     <p>Settings</p>
                 </a>
             </li>
