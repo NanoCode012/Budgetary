@@ -44,18 +44,18 @@
                                             )
                                         ) {
                                             foreach ($rows as $row) { ?>
-                                        <tr>
-                                            <td><?php echo $row['title']; ?></td>
-                                            <td><?php echo $row['category']; ?></td>
-                                            <td><?php echo $row['amount']; ?></td>
-                                            <td><?php echo $row['wallet_name']; ?></td>
-                                            <td><?php echo $row['description']; ?></td>
-                                            <td><?php echo $row['time_created']; ?></td>
-                                            <td>
-                                                <?php echo editButton($row) .
-                                                                '&nbsp' . deleteButton($row['id'], '?p=modexpense') ;?>
-                                            </td>
-                                        </tr>
+                                            <tr>
+                                                <td><?php echo $row['title']; ?></td>
+                                                <td><?php echo $row['category']; ?></td>
+                                                <td><?php echo $row['amount']; ?></td>
+                                                <td><?php echo $row['wallet_name']; ?></td>
+                                                <td><?php echo $row['description']; ?></td>
+                                                <td><?php echo $row['time_created']; ?></td>
+                                                <td>
+                                                    <?php echo editButton($row) .
+                                                                    '&nbsp' . deleteButton($row['id'], '?p=modexpense') ;?>
+                                                </td>
+                                            </tr>
                                         <?php } } ?>
                                     </tbody>
                                 </table>
@@ -94,7 +94,7 @@
                     </div>
                     <div class="form-group mb-3 modal-amount">
                         <label for="amount">Amount</label>
-                        <input class="form-control" placeholder="Amount" name="amount" type="text">
+                        <input type="number" class="form-control" placeholder="Amount" name="amount" type="text">
                     </div>
                     <div class="form-group mb-3 modal-wallet">
                         <label for="wallet_id"><?php echo $m_wallet; ?></label>
@@ -166,6 +166,12 @@
                 modal.find('.recur').hide();
             }
             else if (type == 'create'){
+                modal.find('.modal-footer input').val('')
+                modal.find('.modal-title input').val('')
+                modal.find('.modal-category select')[0].selectedIndex = 0;
+                modal.find('.modal-amount input').val('')
+                modal.find('.modal-wallet select')[0].selectedIndex = 0;
+                modal.find('.modal-description textarea').val('')
                 modal.find('.recur').show();
             }
         });
