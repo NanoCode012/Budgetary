@@ -28,7 +28,7 @@
                     </div>
                 </div>
             </form>
-            <ul class="navbar-nav">
+            <!-- <ul class="navbar-nav">
                 <li class="nav-item btn-rotate dropdown">
                     <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -43,7 +43,7 @@
                         <a class="dropdown-item" href="#">Something else here</a>
                     </div>
                 </li>
-            </ul>
+            </ul> -->
         </div>
     </div>
 </nav>
