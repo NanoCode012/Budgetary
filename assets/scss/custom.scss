@@ -54,3 +54,28 @@ $danger-color:              #e686f3 !default;
 .sidebar .sidebar-wrapper {
     overflow: hidden;
 }
+
+// Remove border
+.card-body .avatar {
+    border: 0;
+}
+
+// Font awesome color
+.fas, .far, .fa {
+    color: $primary-color;
+}
+
+// Login/Register
+.login-icon {
+    font-size: 1.5rem;
+}
+
+.login-signup, .login-signin{
+    color: $default-color;
+}
+
+// Modal
+
+.modal-content {
+    border-radius: 1em;
+}

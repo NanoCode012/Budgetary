@@ -4226,4 +4226,19 @@ License - nucleoapp.com/license/
 .sidebar .sidebar-wrapper {
   overflow: hidden; }
 
+.card-body .avatar {
+  border: 0; }
+
+.fas, .far, .fa {
+  color: #51cbce; }
+
+.login-icon {
+  font-size: 1.5rem; }
+
+.login-signup, .login-signin {
+  color: #66615B; }
+
+.modal-content {
+  border-radius: 1em; }
+
 /*# sourceMappingURL=custom.css.map */
