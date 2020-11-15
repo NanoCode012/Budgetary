@@ -52,7 +52,7 @@ if (isset($_POST['create']) || isset($_POST['edit'])){
                 $msgBox = error($m_adderror);
             }
         }
-        else { //Edit
+        else if (isset($_POST['edit'])){ //Edit
             if ( 
                 $stmt = $db->update(
                     'transaction',
