@@ -82,8 +82,8 @@ $row = $db->row(
                                     </div>
                                     <div class="col-md-4 px-1">
                                         <div class="form-group">
-                                            <label>Password</label>
-                                            <input type="password" class="form-control" placeholder="Current Password"
+                                            <label>New Password</label>
+                                            <input type="password" class="form-control" placeholder="New Password"
                                                 name="password">
                                         </div>
                                     </div>
