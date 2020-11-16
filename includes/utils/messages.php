@@ -55,4 +55,8 @@ $categories = array('FOOD', 'RENT', 'UTLITIES', 'SHOPPING', 'ONLINE');
 
 // Feedback
 $m_addalready = 'Already submitted before';
+
+// Datetime
+$m_startdate = 'Start Date';
+$m_timerange = 'Time Range';
 ?>
