@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 16, 2020 at 06:28 PM
+-- Generation Time: Nov 18, 2020 at 04:46 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.11
 
@@ -27,6 +27,23 @@ DELIMITER $$
 --
 -- Procedures
 --
+DROP PROCEDURE IF EXISTS `Add budget`$$
+CREATE DEFINER=`siit`@`localhost` PROCEDURE `Add budget` (IN `user_id` INT, IN `category` VARCHAR(255), IN `maximum` FLOAT, IN `frequency` VARCHAR(255), IN `from_date` DATE, IN `to_date` DATE)  NO SQL
+BEGIN
+	IF from_date IS NULL THEN
+    	IF (frequency LIKE "WEEKLY") THEN
+            SET @T = DATE_ADD(NOW(), INTERVAL 1 WEEK);
+        ELSEIF (frequency LIKE "MONTHLY") THEN
+            SET @T = DATE_ADD(NOW(), INTERVAL 1 MONTH);
+        ELSEIF (frequency LIKE "DAILY") THEN
+            SET @T = DATE_ADD(NOW(), INTERVAL 1 DAY);
+        END IF;
+    	INSERT INTO `budget`(`user_id`, `category`, `maximum`, `frequency`, `start_time`, `end_time`) VALUES (user_id, category,  maximum, frequency, NOW(), @T);
+    ELSE
+  		INSERT INTO `budget`(`user_id`, `category`, `maximum`, `frequency`, `start_time`, `end_time`) VALUES (user_id, category,  maximum, frequency, from_date, to_date);
+    END IF;
+END$$
+
 DROP PROCEDURE IF EXISTS `Add transaction`$$
 CREATE DEFINER=`siit`@`localhost` PROCEDURE `Add transaction` (IN `user_id` INT, IN `wallet_id` INT, IN `title` VARCHAR(255), IN `category` VARCHAR(255), IN `amount` FLOAT, IN `description` VARCHAR(255), IN `recurring` BOOLEAN, IN `recur_freq` VARCHAR(10), IN `recur_times` INT)  NO SQL
 BEGIN
@@ -81,6 +98,21 @@ CREATE TABLE `budget` (
 --       `user` -> `id`
 --
 
+--
+-- Triggers `budget`
+--
+DROP TRIGGER IF EXISTS `Prevent multiple category per user`;
+DELIMITER $$
+CREATE TRIGGER `Prevent multiple category per user` BEFORE INSERT ON `budget` FOR EACH ROW BEGIN
+	SET @c = (SELECT COUNT(category) FROM budget WHERE category = NEW.category);
+    IF @c > 0 THEN
+    	SIGNAL SQLSTATE '45000'
+          SET MESSAGE_TEXT = 'Budget with chosen category already exists!';
+    END IF;
+END
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -104,8 +136,8 @@ CREATE TABLE `currency` (
 --
 
 INSERT INTO `currency` (`id`, `name`, `relative`, `time_modified`) VALUES
-(1, 'USD', 1, '2020-11-16 18:27:43'),
-(2, 'THB', 0.0331233, '2020-11-16 18:27:43');
+(1, 'USD', 1, '2020-11-18 15:06:01'),
+(2, 'THB', 0.0331241, '2020-11-18 15:06:01');
 
 --
 -- Triggers `currency`

@@ -30,8 +30,8 @@
                                         <?php
                                         
                                         $q =
-                                            'SELECT id, category, maximum, frequency, start_time, end_time FROM budget '.
-                                            'WHERE user_id=? AND end_time > NOW();';
+                                            'SELECT id, category, maximum, frequency, DATE_FORMAT(start_time, "%d/%m/%Y") AS start_time, DATE_FORMAT(end_time, "%d/%m/%Y") AS end_time '.
+                                            'FROM budget WHERE user_id=? AND end_time > NOW();';
                                         if (
                                             $rows = $db->run(
                                                 $q,
@@ -70,7 +70,7 @@
             <span aria-hidden="true">&times;</span>
             </button>
         </div>
-        <form role="form" action="?p=modwallets" method="post">
+        <form role="form" action="?p=modbudget" method="post">
             <div class="modal-body">
                 <fieldset>
                     <div class="form-group mb-3 modal-category">
@@ -85,9 +85,9 @@
                         <label for="maximum">Maximum</label>
                         <input class="form-control" placeholder="Maximum" name="maximum" type="number">
                     </div>
-                    <div class="form-group mb-3">
-                        <label for="recurring-frequency"><?php echo $m_recurringfrequency; ?></label>
-                        <select class="form-control" name="recurring-frequency">
+                    <div class="form-group mb-3 modal-frequency">
+                        <label for="frequency"><?php echo $m_recurringfrequency; ?></label>
+                        <select class="form-control" name="frequency">
                             <option value="DAILY" selected>DAILY</option>
                             <option value="WEEKLY">WEEKLY</option>
                             <option value="MONTHLY">MONTHLY</option>
@@ -95,23 +95,23 @@
                     </div>
 
                     <div class="form-group recur mb-3">
-                        <label for="recurring"><?php echo $m_recurring; ?></label>
-                        <input type="checkbox" id="recur" name="recurring" value="Yes">
+                        <label for="manual-dates"><?php echo $m_manualdates; ?></label>
+                        <input type="checkbox" id="manual-dates" name="manual-dates" value="Yes">
                     </div>
 
                     <div class="form-group mb-3" id="range" hidden>
                         <label for="time-range"><?php echo $m_timerange; ?></label>
-                        <div class="input-group">
+                        <div class="input-group modal-from">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">From</span>
                             </div>
-                            <input class="form-control" data-provide="datepicker" data-date-format="dd/mm/yyyy" value="">
+                            <input name="from-date" class="form-control" data-provide="datepicker" data-date-format="yyyy/mm/dd" value="">
                         </div>
-                        <div class="input-group">
+                        <div class="input-group modal-to">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">To&nbsp;&nbsp;</span>
                             </div>
-                            <input class="form-control" data-provide="datepicker" data-date-format="dd/mm/yyyy" value="">
+                            <input name="to-date" class="form-control" data-provide="datepicker" data-date-format="yyyy/mm/dd" value="">
                         </div>
                     </div>
                 </fieldset>
@@ -128,33 +128,37 @@
 <script>
     
     $(function() {
-        $('#recur').click(function() {
-            var checked = $('#recur').is(':checked');
+        $('#manual-dates').click(function() {
+            var checked = $('#manual-dates').is(':checked');
             $('#range').prop('hidden', !checked);
         });
 
-    //     $('#Modal').on('show.bs.modal', function (event) {
-    //         var button = $(event.relatedTarget) // Button that triggered the modal
-    //         var data = button.data('service') // Extract info from data-* attributes
-    //         var type = button.data('type')
-    //         var modal = $(this)
+        $('#Modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var data = button.data('service') // Extract info from data-* attributes
+            var type = button.data('type')
+            var modal = $(this)
             
-    //         // Type: Edit
-    //         modal.find('#title').text(capitalizeFirstLetter(type));
-    //         modal.find('.modal-footer .btn-primary').attr('name', type)
-    //         if (type == 'edit') {
-    //             modal.find('.modal-footer input').val(data['id'])
-    //             modal.find('.modal-name input').val(data['wallet_name'])
-    //             modal.find('.modal-currency select').val(data['currency_id']).attr('selected','selected');
-    //             modal.find('.modal-amount input').val(data['amount'])
-    //         }
-    //         else if (type == 'create'){
-    //             modal.find('.modal-footer input').val('')
-    //             modal.find('.modal-name input').val('')
-    //             modal.find('.modal-currency select')[0].selectedIndex = 0;
-    //             modal.find('.modal-amount input').val('')
-    //         }
-    //     });
+            // Type: Edit
+            modal.find('#title').text(capitalizeFirstLetter(type));
+            modal.find('.modal-footer .btn-primary').attr('name', type)
+            if (type == 'edit') {
+                modal.find('.modal-footer input').val(data['id'])
+                modal.find('.modal-category select').val(data['category']).attr('selected','selected');
+                modal.find('.modal-maximum input').val(data['maximum'])
+                modal.find('.modal-frequency select').val(data['frequency']).attr('selected','selected');
+                modal.find('.modal-from input').val(data['from-date'])
+                modal.find('.modal-to input').val(data['to-date'])
+            }
+            else if (type == 'create'){
+                modal.find('.modal-footer input').val('')
+                modal.find('.modal-category select')[0].selectedIndex = 0;
+                modal.find('.modal-maximum input').val('')
+                modal.find('.modal-frequency select')[0].selectedIndex = 0;
+                modal.find('.modal-from input').val('')
+                modal.find('.modal-to input').val('')
+            }
+        });
     });
 
     function headerStyle(column) {

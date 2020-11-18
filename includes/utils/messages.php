@@ -59,4 +59,6 @@ $m_addalready = 'Already submitted before';
 // Datetime
 $m_startdate = 'Start Date';
 $m_timerange = 'Time Range';
+$m_missingdates = 'Missing Dates';
+$m_manualdates = 'Set dates manually';
 ?>
