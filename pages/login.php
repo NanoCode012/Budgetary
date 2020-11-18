@@ -2,7 +2,7 @@
 <div class="login">
     <div class="login__content">
         <div class="login__img">
-            <img src="pages/chart3D.png" alt="">
+            <img src="assets/img/chart3D.png" alt="">
         </div>
 
         <div class="login__forms">
