@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 10, 2020 at 01:42 PM
+-- Generation Time: Nov 16, 2020 at 06:28 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.11
 
@@ -104,8 +104,17 @@ CREATE TABLE `currency` (
 --
 
 INSERT INTO `currency` (`id`, `name`, `relative`, `time_modified`) VALUES
-(1, 'USD', 1, '2020-10-30 09:51:20'),
-(2, 'BAHT', 0.03125, '2020-10-30 09:51:46');
+(1, 'USD', 1, '2020-11-16 18:27:43'),
+(2, 'THB', 0.0331233, '2020-11-16 18:27:43');
+
+--
+-- Triggers `currency`
+--
+DROP TRIGGER IF EXISTS `Update currency modified time`;
+DELIMITER $$
+CREATE TRIGGER `Update currency modified time` BEFORE UPDATE ON `currency` FOR EACH ROW SET new.time_modified := NOW()
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
