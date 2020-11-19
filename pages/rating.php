@@ -1,47 +1,98 @@
 <?php
 use Kreait\Firebase\Factory;
-use Kreait\Firebase\ServiceAccount;
-
-class Users {
+use Kreait\Firebase\Database\Transaction;
+class Firebase {
     protected $database;
-    protected $dbname = 'users';
-    public function __construct(){
-        $acc = ServiceAccount::fromJsonFile('../secret/siit-293014-f653928d7823.json');
-        $firebase = (new Factory)->withServiceAccount($acc)->create();
-        $this->database = $firebase->getDatabase();
+    protected $dbname;
+    public function __construct($dbname = 'users'){
+        $this->dbname = $dbname;
+        $factory = (new Factory)->withServiceAccount('../secret/siit-293014-f653928d7823.json');
+        $this->database = $factory->createDatabase();
     }
-    public function get(int $userID = NULL){    
-        if (empty($userID) || !isset($userID)) { return FALSE; }
-        if ($this->database->getReference($this->dbname)->getSnapshot()->hasChild($userID)){
-            return $this->database->getReference($this->dbname)->getChild($userID)->getValue();
+    public function get(int $key = NULL){    
+        if (empty($key) || !isset($key)) { return FALSE; }
+        if ($this->database->getReference($this->dbname)->getSnapshot()->hasChild($key)){
+            return $this->database->getReference($this->dbname)->getChild($key)->getValue();
         } else {
             return FALSE;
         }
     }
-    public function insert(array $data) {
+    public function set(array $data) {
         if (empty($data) || !isset($data)) { return FALSE; }
-        foreach ($data as $key => $value){
-            $this->database->getReference()->getChild($this->dbname)->getChild($key)->set($value);
-        }
+        $this->database->getReference()->getChild($this->dbname)->set($data);
+        
         return TRUE;
     }
-    public function delete(int $userID) {
-        if (empty($userID) || !isset($userID)) { return FALSE; }
-        if ($this->database->getReference($this->dbname)->getSnapshot()->hasChild($userID)){
-            $this->database->getReference($this->dbname)->getChild($userID)->remove();
+    public function insert(array $data) {
+        if (empty($data) || !isset($data)) { return FALSE; }
+        $this->database->getReference()->getChild($this->dbname)->update($data);
+        
+        return TRUE;
+    }
+    public function delete(int $key) {
+        if (empty($key) || !isset($key)) { return FALSE; }
+        if ($this->database->getReference($this->dbname)->getSnapshot()->hasChild($key)){
+            $this->database->getReference($this->dbname)->getChild($key)->remove();
             return TRUE;
         } else {
             return FALSE;
         }
     }
- }
- 
- $users = new Users();
- var_dump($users->insert([
-   '1' => 'John',
-   '2' => 'Doe',
-   '3' => 'Smith'
- ]));
+    public function increment(int $key) { //Creates a new key path if not found
+        if (empty($key) || !isset($key)) { return FALSE; }
 
+        $counterRef = $this->database->getReference($this->dbname)->getChild($key);
+        $this->database->runTransaction(function (Transaction $transaction) use ($counterRef) {
+            // You have to snapshot the reference in order to change its value
+            $counterSnapshot = $transaction->snapshot($counterRef);
+        
+            // Get the existing value from the snapshot
+            $counter = $counterSnapshot->getValue() ?: 0;
+            $newCounter = ++$counter;
+            // If the value hasn't changed in the Realtime Database while we are
+            // incrementing it, the transaction will be a success.
+            $transaction->set($counterRef, $newCounter);
+            return $newCounter;
+        });
+        return TRUE;
+    }
+    public function safe_delete(int $key) {
+        if (empty($key) || !isset($key)) { return FALSE; }
+
+        if ($this->database->getReference($this->dbname)->getSnapshot()->hasChild($key)) { 
+            $toBeDeleted = $this->database->getReference($this->dbname)->getChild($key);
+            $this->database->runTransaction(function (Transaction $transaction) use ($toBeDeleted) {
+    
+                $transaction->snapshot($toBeDeleted);
+            
+                $transaction->remove($toBeDeleted);
+            });
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+}
+
+if (isset($_POST['review'])) {
+    $user_review = new Firebase('reviews');
+    $users = new Firebase('users');
+    if ($users->get($_SESSION['user_id']) == 'complete') {
+        $msgBox = error($m_addalready);
+    } else {
+        if ($user_review->increment($_POST['rating'])) {
+            $users->insert([$_SESSION['user_id'] => 'complete']);
+            $msgBox = success($m_addsuccess);
+        } else {
+            $msgBox = error($m_adderror);
+        }
+    }
+} 
+
+if ($_POST){
+    if (isset($msgBox))  $_SESSION['msgBox'] =  $msgBox;
+    header( "Location: ?p=settings", true, 303 );
+}
+exit();
 
 ?>

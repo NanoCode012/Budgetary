@@ -163,7 +163,7 @@ $currencies = $db->run($q);
             <span aria-hidden="true">&times;</span>
             </button>
         </div>
-        <form role="form" action="?p=settings" method="post">
+        <form role="form" action="?p=rating" method="post">
             <div class="modal-body">
                 <fieldset>
                     <div class="form-group mb-3">
@@ -180,7 +180,7 @@ $currencies = $db->run($q);
             <div class="modal-footer">
                 <input name="rating" hidden>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button id="send" type="submit" class="btn btn-primary">Save changes</button>
+                <button name="review" id="send" type="submit" class="btn btn-primary">Submit</button>
             </div>
         </form>
         </div>
