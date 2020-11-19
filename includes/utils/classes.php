@@ -71,7 +71,7 @@ class Firebase {
         }
     }
     public function get_keypairs() {
-        $arr = $this->database->getReference($this->dbname)->getValue();
+        $arr = $this->database->getReference($this->dbname)->shallow()->getValue();
         $new_arr = array();
         foreach ($arr as $key => $val) {
             if (! is_null($val)) {
