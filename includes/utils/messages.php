@@ -51,7 +51,7 @@ $m_walletname = 'Name';
 $m_back = 'Back';
 
 // Categories
-$categories = array('FOOD', 'RENT', 'UTLITIES', 'SHOPPING', 'ONLINE');
+$categories = array('FOOD', 'RENT', 'UTILITIES', 'SHOPPING', 'ONLINE');
 
 // Feedback
 $m_addalready = 'Already submitted before';
