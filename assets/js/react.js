@@ -14,7 +14,7 @@ class BoardSwitcher extends React.Component {
     constructor() {
         super();
         this.state = {
-            clickedIndex : 0,
+            clickedIndex : 4,
         };
     }
 

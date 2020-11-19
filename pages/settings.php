@@ -185,12 +185,12 @@ $currencies = $db->run($q);
     </div>
 </div>
 <!-- Core React -->
-<script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
 <!-- Custom React JS -->
-<script type="text/babel" src="assets/js/react.js"></script>
+<script src="assets/js/react-min.js"></script>
 
 <script>
     $(document).ready(function(){
