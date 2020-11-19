@@ -40,7 +40,7 @@
                         $rating += $key * $val;
                         $total_num += $val;
                     }
-                    echo $rating / $total_num;
+                    echo number_format($rating / $total_num, 1);
                 ?>
                 <i class="fas fa-star"></i>
                 <button type="button" class="btn btn-outline-primary my-0 p-lg-1" data-toggle="modal" data-target="#Modal" 
