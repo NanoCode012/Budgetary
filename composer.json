@@ -1,5 +1,6 @@
 {
     "require": {
-        "paragonie/easydb": "^2"
+        "paragonie/easydb": "^2",
+        "kreait/firebase-php": "^4.17.0"
     }
 }
