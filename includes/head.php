@@ -1,6 +1,7 @@
 <?php
-include 'utils/functions.php';
 include 'utils/messages.php';
+include 'utils/functions.php';
+include 'utils/classes.php';
 ?>
 
 <!doctype html>
