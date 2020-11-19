@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 18, 2020 at 04:46 PM
+-- Generation Time: Nov 19, 2020 at 02:09 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.11
 
@@ -104,7 +104,7 @@ CREATE TABLE `budget` (
 DROP TRIGGER IF EXISTS `Prevent multiple category per user`;
 DELIMITER $$
 CREATE TRIGGER `Prevent multiple category per user` BEFORE INSERT ON `budget` FOR EACH ROW BEGIN
-	SET @c = (SELECT COUNT(category) FROM budget WHERE category = NEW.category);
+	SET @c = (SELECT COUNT(category) FROM budget WHERE category = NEW.category AND NEW.start_time <= end_time);
     IF @c > 0 THEN
     	SIGNAL SQLSTATE '45000'
           SET MESSAGE_TEXT = 'Budget with chosen category already exists!';
@@ -136,8 +136,8 @@ CREATE TABLE `currency` (
 --
 
 INSERT INTO `currency` (`id`, `name`, `relative`, `time_modified`) VALUES
-(1, 'USD', 1, '2020-11-18 15:06:01'),
-(2, 'THB', 0.0331241, '2020-11-18 15:06:01');
+(1, 'USD', 1, '2020-11-19 00:00:02'),
+(2, 'THB', 0.0330257, '2020-11-19 00:00:02');
 
 --
 -- Triggers `currency`
