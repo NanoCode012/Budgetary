@@ -40,5 +40,5 @@ class BoardSwitcher extends React.Component {
 }
 
 
-const domContainer = document.querySelector('#root');
+const domContainer = document.querySelector('#react-dom');
 ReactDOM.render(<BoardSwitcher numBoards={5} />, domContainer);

@@ -170,11 +170,9 @@ $currencies = $db->run($q);
                         <p>How would you rate our service?</p>
                     </div>
                     <div class="form-group mb-3">
-                        <label for="rating">Rating</label>
-                        <div class="" id="root"></div>
+                        <label for="rating">Rating (1 = Poor, 5 = Excellent)</label>
+                        <div id="react-dom"></div>
                     </div>
-
-                    
                 </fieldset>
             </div>
             <div class="modal-footer">
