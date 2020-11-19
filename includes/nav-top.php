@@ -28,11 +28,26 @@
                     </div>
                 </div>
             </form>
-            <div <?php if (! in_array($page, ['settings', ])) echo 'style="display:none"';?>>
-                <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#Modal" 
-                data-type="create"><i class="fas fa-comments fa-lg"></i>
+            <?php if (in_array($page, ['settings', ])) { ?>
+            <div>
+                <?php 
+                    $review = new Firebase('reviews');
+                    
+                    $rating = 0;
+                    $total_num = 0;
+                    $arr = $review->get_keypairs();
+                    foreach ($arr as $key => $val) {
+                        $rating += $key * $val;
+                        $total_num += $val;
+                    }
+                    echo $rating / $total_num;
+                ?>
+                <i class="fas fa-star"></i>
+                <button type="button" class="btn btn-outline-primary my-0 p-lg-1" data-toggle="modal" data-target="#Modal" 
+                data-type="create"><i class="far fa-smile py-0 fa-2x"></i>
                 </button>
             </div>
+            <?php } ?>
             
             <!-- <ul class="navbar-nav">
                 <li class="nav-item btn-rotate dropdown">
