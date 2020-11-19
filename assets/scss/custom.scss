@@ -65,6 +65,10 @@ $danger-color:              #e686f3 !default;
     color: $primary-color;
 }
 
+.btn:hover i{
+    color: $white-color;
+}
+
 // Login/Register
 .login-icon {
     font-size: 1.5rem;
@@ -78,4 +82,19 @@ $danger-color:              #e686f3 !default;
 
 .modal-content {
     border-radius: 1em;
+}
+
+// React
+
+.boards {
+    overflow: hidden;
+}
+.board {
+    border: 3px solid $white-color;
+    border-radius: 1em;
+    float: left;
+    font-size: 24px;
+}
+.board.selected {
+    border-color: $primary-color;
 }

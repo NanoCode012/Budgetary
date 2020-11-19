@@ -4232,6 +4232,9 @@ License - nucleoapp.com/license/
 .fas, .far, .fa {
   color: #51cbce; }
 
+.btn:hover i {
+  color: #FFFFFF; }
+
 .login-icon {
   font-size: 1.5rem; }
 
@@ -4240,5 +4243,17 @@ License - nucleoapp.com/license/
 
 .modal-content {
   border-radius: 1em; }
+
+.boards {
+  overflow: hidden; }
+
+.board {
+  border: 3px solid #FFFFFF;
+  border-radius: 1em;
+  float: left;
+  font-size: 24px; }
+
+.board.selected {
+  border-color: #51cbce; }
 
 /*# sourceMappingURL=custom.css.map */

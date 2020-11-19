@@ -28,6 +28,12 @@
                     </div>
                 </div>
             </form>
+            <div <?php if (! in_array($page, ['settings', ])) echo 'style="display:none"';?>>
+                <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#Modal" 
+                data-type="create"><i class="fas fa-comments fa-lg"></i>
+                </button>
+            </div>
+            
             <!-- <ul class="navbar-nav">
                 <li class="nav-item btn-rotate dropdown">
                     <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink"

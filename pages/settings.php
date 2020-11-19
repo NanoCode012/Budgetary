@@ -153,3 +153,53 @@ $currencies = $db->run($q);
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="title">Feedback</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form role="form" action="?p=settings" method="post">
+            <div class="modal-body">
+                <fieldset>
+                    <div class="form-group mb-3">
+                        <p>How would you rate our service?</p>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="rating">Rating</label>
+                        <div class="" id="root"></div>
+                    </div>
+
+                    
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <input name="rating" hidden>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="send" type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+<!-- Core React -->
+<script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+<!-- Custom React JS -->
+<script type="text/babel" src="assets/js/react.js"></script>
+
+<script>
+    $(document).ready(function(){
+        $('#send').on('click', ()=> {
+            let $v = $('.boards').children('.selected').html();
+            $('.modal-footer input').val($v);
+        })
+        
+    })
+</script>
