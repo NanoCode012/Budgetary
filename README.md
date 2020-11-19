@@ -4,13 +4,15 @@
 
 1. LAMP stack (Any OS + Apache + PHP + MySQL)
 2. [Compose](https://getcomposer.org/download/)
-3. (OPTIONAL) [npm](https://nodejs.org/)
+3. [Firebase account](http://firebase.google.com/)
+4. (OPTIONAL) [npm](https://nodejs.org/)
 
 ## Steps
 
 1. Clone repo 
 2. Run `php composer.phar install` to get EasyDB
-3. (OPTIONAL) Run `npm install` to get Bootstrap icons/Prettier plugins
+3. Get `service account` key from Firebase and place it within `../secret/service-account.json` of directory
+4. (OPTIONAL) Run `npm install` to get development packages
 
 ## References
 
