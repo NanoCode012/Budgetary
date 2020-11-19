@@ -1,12 +1,10 @@
 <?php
-use Kreait\Firebase\Factory;
-use Kreait\Firebase\Database\Transaction;
 class Firebase {
     protected $database;
     protected $dbname;
     public function __construct($dbname = 'users'){
         $this->dbname = $dbname;
-        $factory = (new Factory)->withServiceAccount('../secret/service-account.json');
+        $factory = (new \Kreait\Firebase\Factory)->withServiceAccount('../secret/service-account.json');
         $this->database = $factory->createDatabase();
     }
     public function get(int $key = NULL){    
@@ -42,7 +40,7 @@ class Firebase {
         if (empty($key) || !isset($key)) { return FALSE; }
 
         $counterRef = $this->database->getReference($this->dbname)->getChild($key);
-        $this->database->runTransaction(function (Transaction $transaction) use ($counterRef) {
+        $this->database->runTransaction(function (\Kreait\Firebase\Database\Transaction $transaction) use ($counterRef) {
             // You have to snapshot the reference in order to change its value
             $counterSnapshot = $transaction->snapshot($counterRef);
         
@@ -61,7 +59,7 @@ class Firebase {
 
         if ($this->database->getReference($this->dbname)->getSnapshot()->hasChild($key)) { 
             $toBeDeleted = $this->database->getReference($this->dbname)->getChild($key);
-            $this->database->runTransaction(function (Transaction $transaction) use ($toBeDeleted) {
+            $this->database->runTransaction(function (\Kreait\Firebase\Database\Transaction $transaction) use ($toBeDeleted) {
     
                 $transaction->snapshot($toBeDeleted);
             
