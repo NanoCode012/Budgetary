@@ -52,4 +52,7 @@ $m_back = 'Back';
 
 // Categories
 $categories = array('FOOD', 'RENT', 'UTLITIES', 'SHOPPING', 'ONLINE');
+
+// Feedback
+$m_addalready = 'Already submitted before';
 ?>

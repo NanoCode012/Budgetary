@@ -28,6 +28,27 @@
                     </div>
                 </div>
             </form>
+            <?php if (in_array($page, ['settings', ])) { ?>
+            <div>
+                <?php 
+                    $review = new Firebase('reviews');
+                    
+                    $rating = 0;
+                    $total_num = 0;
+                    $arr = $review->get_keypairs();
+                    foreach ($arr as $key => $val) {
+                        $rating += $key * $val;
+                        $total_num += $val;
+                    }
+                    echo number_format($rating / $total_num, 1);
+                ?>
+                <i class="fas fa-star"></i>
+                <button type="button" class="btn btn-outline-primary my-0 p-lg-1" data-toggle="modal" data-target="#Modal" 
+                data-type="create"><i class="far fa-smile py-0 fa-2x"></i>
+                </button>
+            </div>
+            <?php } ?>
+            
             <!-- <ul class="navbar-nav">
                 <li class="nav-item btn-rotate dropdown">
                     <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink"

@@ -1,12 +1,15 @@
 {
-  "name": "paper-dashboard-2",
-  "description": "Bootstrap 4 Paper Design",
-  "version": "2.0.1",
-  "homepage": "http://creative-tim.com/product/paper-dashboard-2",
-  "author": "Creative Tim",
-  "license": "Creative Tim License <www.creative-tim.com/license>",
+  "name": "Budgetary",
+  "description": "Budget Management System",
+  "version": "2.0.0",
+  "homepage": "https://budgetary.site",
+  "author": "NanoCode012",
+  "repository": "https://github.com/NanoCode012/Budgetary",
+  "license": "",
   "devDependencies": {
     "@prettier/plugin-php": "^0.15.2",
+    "babel-cli": "^6.26.0",
+    "babel-preset-react-app": "^3.1.2",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^6.1.0",
     "gulp-clean": "^0.4.0",
@@ -18,5 +21,6 @@
   },
   "scripts": {
     "prettier": "prettier"
-  }
+  },
+  "dependencies": {}
 }
