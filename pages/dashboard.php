@@ -165,17 +165,24 @@
                         </div>
                         <div class="card-body">
                             <!-- <canvas id="speedChart" width="400" height="100"></canvas> -->
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                            <?php $arr = array('primary', 'info', 'secondary', 'warning', 'success'); foreach($arr as $ar) { ?>
+                            <div class="progress-container progress-<?php echo $ar; ?>">
+                                <span class="progress-badge" >Default</span>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 25%;">
+                                        <span class="progress-value">25%</span>
+                                    </div>
+                                </div>
                             </div>
-                            <br>
+                            <?php } ?>
+                            <!-- <br>
                             <div class="progress">
                                 <div class="progress-bar" role="progressbar" style="width: 20%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                             <br>
                             <div class="progress">
                                 <div class="progress-bar" role="progressbar" style="width: 70%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="card-footer">
                             <div class="chart-legend">
