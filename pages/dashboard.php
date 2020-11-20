@@ -1,4 +1,18 @@
-<!-- Placeholder Dashboard -->
+<?php 
+
+$dict = [
+    'frequency' => 'MONTHLY',
+    'from-date' => null,
+    'to-date' => null,
+];
+
+if (isset($_POST['submit'])) {
+
+}
+
+$row = $db->row('CALL `Get dashboard`(?,?,?,?)', $_SESSION['user_id'], $dict['from-date'], $dict['from-date'], $dict['frequency']);
+?>
+
 <div class="wrapper ">
     <?php include 'includes/nav-side.php' ?>
     <div class="main-panel">
@@ -16,8 +30,8 @@
                                 </div>
                                 <div class="col-7 col-md-8">
                                     <div class="numbers">
-                                        <p class="card-category">Capacity</p>
-                                        <p class="card-title">150GB
+                                        <p class="card-category">Total Expense</p>
+                                        <p class="card-title"><?php echo $row['@total_expense']; ?>
                                         <p>
                                     </div>
                                 </div>
@@ -27,7 +41,7 @@
                             <hr>
                             <div class="stats">
                                 <i class="fa fa-refresh"></i>
-                                Update Now
+                                Updated Now
                             </div>
                         </div>
                     </div>
@@ -43,8 +57,9 @@
                                 </div>
                                 <div class="col-7 col-md-8">
                                     <div class="numbers">
-                                        <p class="card-category">Revenue</p>
-                                        <p class="card-title">$ 1,345
+                                        <p class="card-category">Avg Expense</p>
+                                        <p class="card-title"><?php if ($row['percentage_increase'] > 0) {echo '+ ';} else {echo '- ';}
+                                                                    echo $row['percentage_increase']; ?>%
                                         <p>
                                     </div>
                                 </div>
@@ -54,7 +69,7 @@
                             <hr>
                             <div class="stats">
                                 <i class="fa fa-calendar-o"></i>
-                                Last day
+                                This period
                             </div>
                         </div>
                     </div>
@@ -70,8 +85,8 @@
                                 </div>
                                 <div class="col-7 col-md-8">
                                     <div class="numbers">
-                                        <p class="card-category">Errors</p>
-                                        <p class="card-title">23
+                                        <p class="card-category">Latest</p>
+                                        <p class="card-title" style="font-size: 0.7em"><?php echo $row['@last_category']; ?>
                                         <p>
                                     </div>
                                 </div>
@@ -81,7 +96,7 @@
                             <hr>
                             <div class="stats">
                                 <i class="fa fa-clock-o"></i>
-                                In the last hour
+                                Recently
                             </div>
                         </div>
                     </div>
@@ -97,8 +112,8 @@
                                 </div>
                                 <div class="col-7 col-md-8">
                                     <div class="numbers">
-                                        <p class="card-category">Followers</p>
-                                        <p class="card-title">+45K
+                                        <p class="card-category">High Expense</p>
+                                        <p class="card-title"><?php echo number_format($row['@highest_expense'], 0); ?>
                                         <p>
                                     </div>
                                 </div>
@@ -204,8 +219,78 @@
     </div>
 </div>
 
+<div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="title">Filter</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form role="form" action="?p=modexpense" method="post">
+            <div class="modal-body">
+                <fieldset>
+                    <div class="form-group recur mb-3">
+                        <label for="recurring"><?php echo $m_recurring; ?></label>
+                        <input type="checkbox" id="recur" name="recurring" value="Yes">
+                    </div>
+                    <div class="form-group mb-3" id="recur-f" hidden>
+                        <label for="recurring-frequency"><?php echo $m_recurringfrequency; ?></label>
+                        <select class="form-control" name="recurring-frequency">
+                            <option value="DAILY" selected>DAILY</option>
+                            <option value="WEEKLY">WEEKLY</option>
+                            <option value="MONTHLY">MONTHLY</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-3" id="recur-t" hidden>
+                        <label for="recurring-times"><?php echo $m_recurringtimes; ?></label>
+                        <input class="form-control" placeholder="<?php echo $m_recurringtimes; ?>" name="recurring-times" type="number">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="manual-dates"><?php echo $m_manualdates; ?></label>
+                        <input type="checkbox" id="manual-dates" name="manual-dates" value="Yes">
+                    </div>
+
+                    <div class="form-group mb-3" id="range" hidden>
+                        <label for="time-range"><?php echo $m_timerange; ?></label>
+                        <div class="input-group modal-from">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">From</span>
+                            </div>
+                            <input name="from-date" class="form-control" data-provide="datepicker" data-date-format="yyyy/mm/dd" value="">
+                        </div>
+                        <div class="input-group modal-to">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">To&nbsp;&nbsp;</span>
+                            </div>
+                            <input name="to-date" class="form-control" data-provide="datepicker" data-date-format="yyyy/mm/dd" value="">
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <input name="id" hidden>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+
 <script>
 $(function() {
+    $('#recur').click(function() {
+        var checked = $('#recur').is(':checked');
+        $('#recur-f').prop('hidden', !checked);
+    });
+
+    $('#manual-dates').on('click change', function() {
+        var checked = $('#manual-dates').is(':checked');
+        $('#range').prop('hidden', !checked);
+    });
+
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
         type: 'bar',

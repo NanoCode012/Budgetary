@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 20, 2020 at 04:13 AM
+-- Generation Time: Nov 20, 2020 at 07:30 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.11
 
@@ -145,6 +145,40 @@ BEGIN
     ) AS transaction_per_wallet;
     
 
+END$$
+
+DROP PROCEDURE IF EXISTS `Get dashboard`$$
+CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get dashboard` (IN `user_id` INT, IN `start_date` DATE, IN `end_date` DATE, IN `frequency` VARCHAR(255))  NO SQL
+BEGIN
+    SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
+    SET @start_date = NOW();
+    SET @end_date = NOW();
+    
+    IF frequency = 'DAILY' THEN
+    	SET @freq_t = 1;
+    ELSEIF frequency = 'WEEKLY' THEN
+    	SET @freq_t = 7;
+    ELSEIF frequency = 'MONTHLY' THEN
+    	SET @freq_t = 30;
+    END IF;
+    
+    SET @start_date = (SELECT DATE_ADD(@start_date, INTERVAL -(@freq_t/2) DAY));
+    SET @end_date = (SELECT DATE_ADD(@end_date, INTERVAL (@freq_t/2) DAY));
+    
+	SELECT COUNT(*) INTO @total_expense FROM transaction WHERE transaction.user_id = user_id AND time_created BETWEEN @start_date AND @end_date;
+    
+	SELECT category INTO @last_category FROM transaction t WHERE t.user_id = user_id AND t.time_created BETWEEN @start_date AND @end_date ORDER BY t.time_created DESC LIMIT 1;
+    
+    SELECT MAX(((t.amount)*c.relative)/@relative_main) INTO @highest_expense FROM transaction t, currency c, wallet w WHERE t.user_id = user_id AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date;
+    
+    SELECT SUM(((t.amount)*c.relative)/@relative_main) INTO @cur_period_sum FROM transaction t, currency c, wallet w WHERE t.user_id = user_id AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date;
+    
+    SET @past_start_date = (SELECT DATE_ADD(@start_date, INTERVAL -@freq_t DAY));
+    SET @past_end_date = @start_date;
+    
+    SELECT SUM(((t.amount)*c.relative)/@relative_main) INTO @past_period_sum FROM transaction t, currency c, wallet w WHERE t.user_id = user_id AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date;
+    
+	SELECT @total_expense, @last_category, @highest_expense, ((@past_period_sum/@cur_period_sum)*100 - 1) AS percentage_increase;
 END$$
 
 DELIMITER ;
