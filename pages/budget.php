@@ -30,7 +30,7 @@
                                         <?php
                                         
                                         $q =
-                                            'SELECT id, category, maximum, frequency, DATE_FORMAT(start_time, "%d/%m/%Y") AS start_time, DATE_FORMAT(end_time, "%d/%m/%Y") AS end_time '.
+                                            'SELECT id, category, maximum, frequency, start_time, DATE_FORMAT(start_time, "%d/%m/%Y") AS start_time_form, end_time, DATE_FORMAT(end_time, "%d/%m/%Y") AS end_time_form '.
                                             'FROM budget WHERE user_id=? AND end_time > NOW();';
                                         if (
                                             $rows = $db->run(
@@ -43,8 +43,8 @@
                                                 <td><?php echo $row['category']; ?></td>
                                                 <td><?php echo $row['maximum']; ?></td>
                                                 <td><?php echo $row['frequency']; ?></td>
-                                                <td><?php echo $row['start_time']; ?></td>
-                                                <td><?php echo $row['end_time']; ?></td>
+                                                <td><?php echo $row['start_time_form']; ?></td>
+                                                <td><?php echo $row['end_time_form']; ?></td>
                                                 <td>
                                                     <?php echo editButton($row) .
                                                                     '&nbsp' . deleteButton($row['id'], '?p=modbudget') ;?>
@@ -128,7 +128,7 @@
 <script>
     
     $(function() {
-        $('#manual-dates').click(function() {
+        $('#manual-dates').on('click change', function() {
             var checked = $('#manual-dates').is(':checked');
             $('#range').prop('hidden', !checked);
         });
@@ -147,8 +147,10 @@
                 modal.find('.modal-category select').val(data['category']).attr('selected','selected');
                 modal.find('.modal-maximum input').val(data['maximum'])
                 modal.find('.modal-frequency select').val(data['frequency']).attr('selected','selected');
-                modal.find('.modal-from input').val(data['from-date'])
-                modal.find('.modal-to input').val(data['to-date'])
+                modal.find('.modal-from input').val(data['start_time'])
+                modal.find('.modal-to input').val(data['end_time'])
+                $('#manual-dates').prop( "checked", true );
+                $('#range').prop('hidden', false);
             }
             else if (type == 'create'){
                 modal.find('.modal-footer input').val('')
@@ -157,6 +159,8 @@
                 modal.find('.modal-frequency select')[0].selectedIndex = 0;
                 modal.find('.modal-from input').val('')
                 modal.find('.modal-to input').val('')
+                $('#manual-dates').prop( "checked", false );
+                $('#range').prop('hidden', true);
             }
         });
     });
