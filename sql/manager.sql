@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 20, 2020 at 07:30 PM
+-- Generation Time: Nov 20, 2020 at 08:01 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.11
 
@@ -83,17 +83,17 @@ BEGIN
     DECLARE i INT;
     
     DROP TEMPORARY TABLE IF EXISTS `tmp`;
-    CREATE TEMPORARY TABLE `tmp` ( `budget_id` INT NOT NULL , `used` FLOAT, `maximum` FLOAT NOT NULL ) ENGINE = InnoDB;
+    CREATE TEMPORARY TABLE `tmp` ( `budget_id` INT NOT NULL , `category` VARCHAR(255) NOT NULL , `used` FLOAT, `maximum` FLOAT NOT NULL ) ENGINE = InnoDB;
     
     SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
     
     SET @n = (SELECT COUNT(*) FROM budget b WHERE b.user_id = user_id AND b.start_time < NOW() AND NOW() < b.end_time);
     SET i=0;
     WHILE i<@n DO 
-        SET @b = (SELECT b.id FROM budget b WHERE b.user_id = user_id AND b.start_time < NOW() AND NOW() < b.end_time LIMIT 1 OFFSET i);
+        SELECT b.id, b.category INTO @b, @c FROM budget b WHERE b.user_id = user_id AND b.start_time < NOW() AND NOW() < b.end_time LIMIT 1 OFFSET i;
         
     	CALL `Get budget category info`(@b, @t);
-        INSERT INTO `tmp` VALUES (@b, @t, (SELECT maximum FROM budget WHERE id = @b)/@relative_main);
+        INSERT INTO `tmp` VALUES (@b, @c, @t, (SELECT maximum FROM budget WHERE id = @b)/@relative_main);
         
         SET i = i + 1;
     END WHILE;

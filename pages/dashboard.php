@@ -152,14 +152,14 @@ $row = $db->row('CALL `Get dashboard`(?,?,?,?)', $_SESSION['user_id'], $dict['fr
                 <div class="col-md-4">
                     <div class="card ">
                         <div class="card-header ">
-                            <h5 class="card-title">Email Statistics</h5>
-                            <p class="card-category">Last Campaign Performance</p>
+                            <h5 class="card-title">Expense by Category</h5>
+                            <!-- <p class="card-category">Last Campaign Performance</p> -->
                         </div>
                         <div class="card-body ">
-                            <canvas id="chartEmail"></canvas>
+                            <canvas id="donutChart" width="200" height="150"></canvas>
                         </div>
                         <div class="card-footer ">
-                            <div class="legend">
+                            <!-- <div class="legend">
                                 <i class="fa fa-circle text-primary"></i> Opened
                                 <i class="fa fa-circle text-warning"></i> Read
                                 <i class="fa fa-circle text-danger"></i> Deleted
@@ -168,7 +168,7 @@ $row = $db->row('CALL `Get dashboard`(?,?,?,?)', $_SESSION['user_id'], $dict['fr
                             <hr>
                             <div class="stats">
                                 <i class="fa fa-calendar"></i> Number of emails sent
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -176,19 +176,22 @@ $row = $db->row('CALL `Get dashboard`(?,?,?,?)', $_SESSION['user_id'], $dict['fr
                     <div class="card card-chart">
                         <div class="card-header">
                             <h5 class="card-title">Budget</h5>
-                            <p class="card-category">Progress bar</p>
+                            <!-- <p class="card-category">Progress bar</p> -->
                         </div>
                         <div class="card-body">
-                            <!-- <canvas id="speedChart" width="400" height="100"></canvas> -->
-                            <?php $arr = array('primary', 'info', 'secondary', 'warning', 'success'); foreach($arr as $ar) { ?>
-                            <div class="progress-container progress-<?php echo $ar; ?>">
-                                <span class="progress-badge" >Default</span>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 25%;">
-                                        <span class="progress-value">25%</span>
+                            <?php 
+                            $arr = array('primary', 'info', 'secondary', 'warning', 'success'); 
+                            $budgets = $db->run('Call `Get all budget category info`(?)', $_SESSION['user_id']);
+                            foreach(array_values($budgets) as $i => $budget) { 
+                                $ratio = number_format($budget['used']*100/$budget['maximum'], 0);?>
+                                <div class="progress-container progress-<?php echo $arr[$i]; ?>">
+                                    <span class="progress-badge" ><?php echo $budget['category']; ?></span>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $ratio?>%;">
+                                            <span class="progress-value"><?php echo $ratio?>%</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                             <?php } ?>
                             <!-- <br>
                             <div class="progress">
@@ -199,7 +202,7 @@ $row = $db->row('CALL `Get dashboard`(?,?,?,?)', $_SESSION['user_id'], $dict['fr
                                 <div class="progress-bar" role="progressbar" style="width: 70%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                             </div> -->
                         </div>
-                        <div class="card-footer">
+                        <!-- <div class="card-footer">
                             <div class="chart-legend">
                                 <i class="fa fa-circle text-info"></i> Tesla Model S
                                 <i class="fa fa-circle text-warning"></i> BMW 5 Series
@@ -208,7 +211,7 @@ $row = $db->row('CALL `Get dashboard`(?,?,?,?)', $_SESSION['user_id'], $dict['fr
                             <div class="card-stats">
                                 <i class="fa fa-check"></i> Data information certified
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     
                 </div>
@@ -289,6 +292,33 @@ $(function() {
     $('#manual-dates').on('click change', function() {
         var checked = $('#manual-dates').is(':checked');
         $('#range').prop('hidden', !checked);
+    });
+
+    var ctx1 = document.getElementById('donutChart').getContext('2d');
+    var myDoughnutChart = new Chart(ctx1, {
+        type: 'doughnut',
+        
+        data: {
+                labels: [
+                    'Red',
+                    'Yellow',
+                    'Blue'
+                ],
+                datasets: [{
+                    data: [10, 20, 30],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                    ]
+            }],
+        }
+        
     });
 
     var ctx = document.getElementById('myChart').getContext('2d');
