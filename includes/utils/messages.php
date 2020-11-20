@@ -61,4 +61,5 @@ $m_startdate = 'Start Date';
 $m_timerange = 'Time Range';
 $m_missingdates = 'Missing Dates';
 $m_manualdates = 'Set dates manually';
+$m_date = 'Date'
 ?>

@@ -124,6 +124,19 @@
                         <label for="recurring-times"><?php echo $m_recurringtimes; ?></label>
                         <input class="form-control" placeholder="<?php echo $m_recurringtimes; ?>" name="recurring-times" type="number">
                     </div>
+                    <div class="form-group mb-3">
+                        <label for="manual-dates"><?php echo $m_manualdates; ?></label>
+                        <input type="checkbox" id="manual-dates" name="manual-dates" value="Yes">
+                    </div>
+
+                    <div class="form-group mb-3" id="range" hidden>
+                        <div class="input-group modal-from">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><?php echo $m_date; ?></span>
+                            </div>
+                            <input name="from-date" class="form-control" data-provide="datepicker" data-date-format="yyyy/mm/dd" value="">
+                        </div>
+                    </div>
                     <div class="form-group modal-description mb-3">
                         <label for="description"><?php echo $m_description; ?></label>
                         <textarea class="form-control" placeholder="<?php echo $m_description; ?>" name="description" rows="3"><?php //echo $v_description; ?></textarea>
@@ -147,6 +160,11 @@
             $('#recur-t').prop('hidden', !checked);
         });
 
+        $('#manual-dates').on('click change', function() {
+            var checked = $('#manual-dates').is(':checked');
+            $('#range').prop('hidden', !checked);
+        });
+
         $('#Modal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget) // Button that triggered the modal
             var data = button.data('service') // Extract info from data-* attributes
@@ -164,6 +182,9 @@
                 modal.find('.modal-wallet select').val(data['wallet_id']).attr('selected','selected');
                 modal.find('.modal-description textarea').val(data['description'])
                 modal.find('.recur').hide();
+                $('#manual-dates').prop( "checked", true );
+                $('#range').prop('hidden', false);
+                modal.find('.modal-from input').val(data['time_created'])
             }
             else if (type == 'create'){
                 modal.find('.modal-footer input').val('')
@@ -173,6 +194,9 @@
                 modal.find('.modal-wallet select')[0].selectedIndex = 0;
                 modal.find('.modal-description textarea').val('')
                 modal.find('.recur').show();
+                $('#manual-dates').prop( "checked", false );
+                $('#range').prop('hidden', true);
+                modal.find('.modal-from input').val('')
             }
         });
     });
