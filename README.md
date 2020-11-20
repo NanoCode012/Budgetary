@@ -10,7 +10,7 @@
 ## Steps
 
 1. Clone repo 
-2. Run `php composer.phar install` to get EasyDB
+2. Run `php composer.phar install` to get EasyDB and Firebase SDK
 3. Get `service account` key from Firebase and place it within `../secret/service-account.json` of directory
 4. (OPTIONAL) Run `npm install` to get development packages
 
