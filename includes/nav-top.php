@@ -48,7 +48,7 @@
                 </button>
             </div>
             <?php } ?>
-            
+            <?php if (in_array($page, ['dashboard', ])) { echo $db->cell('SELECT c.name FROM currency c, user u WHERE c.id = u.currency_id AND u.id = ?', $_SESSION['user_id']); } ?>
             <!-- <ul class="navbar-nav">
                 <li class="nav-item btn-rotate dropdown">
                     <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink"
