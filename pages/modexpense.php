@@ -24,7 +24,7 @@ if (isset($_POST['create']) || isset($_POST['edit'])){
 
     foreach ($dict as $key => $value) {
         if ((!isset($_POST[$key]) || trim($_POST[$key]) == '') && ($key != 'description')) {
-            $msgBox = alertBox($key . ' error');
+            $msgBox = error($key . ' error');
             break;
         } else {
             $dict[$key] = trim($_POST[$key]);
@@ -32,10 +32,22 @@ if (isset($_POST['create']) || isset($_POST['edit'])){
     }
 
     if (!isset($msgBox)) {
+        // Custom time
+        if (isset($_POST['manual-dates'])) {
+            if (isset($_POST['from-date'])) {
+                $dict['from-date'] = $_POST['from-date'];
+            } else {
+                $msgBox = error($m_missingdates);
+            }
+        } else {
+            // Once
+            $dict['from-date'] = null;
+        }
+
         if (isset($_POST['create'])) {
             try {
                 $db->run(
-                    "CALL `Add transaction`(?,?,?,?,?,?,?,?,?)",
+                    "CALL `Add transaction`(?,?,?,?,?,?,?,?,?,?)",
                     $_SESSION['user_id'],
                     $dict['wallet_id'],
                     $dict['title'],
@@ -44,12 +56,14 @@ if (isset($_POST['create']) || isset($_POST['edit'])){
                     $dict['description'],
                     (isset($_POST['recurring']) ? 1 : 0),
                     (isset($_POST['recurring']) ? $_POST['recurring-frequency']: ' '),
-                    (isset($_POST['recurring']) ? $_POST['recurring-times'] : 0)
+                    (isset($_POST['recurring']) ? $_POST['recurring-times'] : 0),
+                    $dict['from-date']
                 );
                 $msgBox = success($m_addsuccess);
             } catch (PDOException $exception) {
                 $msgBox = error($m_adderror);
             }
+            echo $dict['from-date'];
         }
         else if (isset($_POST['edit'])){ //Edit
             if ( 
@@ -61,6 +75,7 @@ if (isset($_POST['create']) || isset($_POST['edit'])){
                         'category' => $dict['category'],
                         'amount' => $dict['amount'],
                         'description' => $dict['description'],
+                        'time_created' => $dict['from-date'],
                     ],
                     ['id' => $_POST['id'], 'user_id' => $_SESSION['user_id']]
                 )

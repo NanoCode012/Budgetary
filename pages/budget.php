@@ -94,7 +94,7 @@
                         </select>
                     </div>
 
-                    <div class="form-group recur mb-3">
+                    <div class="form-group mb-3">
                         <label for="manual-dates"><?php echo $m_manualdates; ?></label>
                         <input type="checkbox" id="manual-dates" name="manual-dates" value="Yes">
                     </div>

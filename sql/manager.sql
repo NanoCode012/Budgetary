@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 20, 2020 at 02:47 AM
+-- Generation Time: Nov 20, 2020 at 04:13 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.11
 
@@ -45,10 +45,15 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS `Add transaction`$$
-CREATE DEFINER=`siit`@`localhost` PROCEDURE `Add transaction` (IN `user_id` INT, IN `wallet_id` INT, IN `title` VARCHAR(255), IN `category` VARCHAR(255), IN `amount` FLOAT, IN `description` VARCHAR(255), IN `recurring` BOOLEAN, IN `recur_freq` VARCHAR(10), IN `recur_times` INT)  NO SQL
+CREATE DEFINER=`siit`@`localhost` PROCEDURE `Add transaction` (IN `user_id` INT, IN `wallet_id` INT, IN `title` VARCHAR(255), IN `category` VARCHAR(255), IN `amount` FLOAT, IN `description` VARCHAR(255), IN `recurring` BOOLEAN, IN `recur_freq` VARCHAR(10), IN `recur_times` INT, IN `time_created` DATETIME)  NO SQL
 BEGIN
+	SET @time = (SELECT NOW());
+	IF time_created IS NOT NULL THEN
+    	SET @time = time_created;
+    END IF;
+    
 	IF recurring THEN
-    	SET @T = NOW();
+    	SET @T = @time;
         SET @times = recur_times;
         SET @i = 0;
         my_loop: LOOP
@@ -68,7 +73,7 @@ BEGIN
             END IF;
         END LOOP;
     ELSE 
-    	INSERT INTO transaction (transaction.user_id, transaction.wallet_id, transaction.title, transaction.category, transaction.amount, transaction.description) VALUES (user_id, wallet_id, title, category, amount, description);
+    	INSERT INTO transaction (transaction.user_id, transaction.wallet_id, transaction.title, transaction.category, transaction.amount, transaction.description, transaction.time_created) VALUES (user_id, wallet_id, title, category, amount, description, @time);
     END IF;
 END$$
 
