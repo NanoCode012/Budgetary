@@ -1,5 +1,4 @@
 <?php 
-include 'config/dbconf.php';
 
 if (isset($_POST['delete'])) {
     if (

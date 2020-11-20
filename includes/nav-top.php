@@ -18,7 +18,7 @@
             <span class="navbar-toggler-bar navbar-kebab"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navigation">
-            <form <?php if (! in_array($page, ['wallets', 'expense'])) echo 'hidden';?>>
+            <form <?php if (! in_array($page, ['wallets', 'expense', 'budget'])) echo 'hidden';?>>
                 <div class="input-group no-border">
                     <input id="searchInput" type="text" value="" class="form-control" placeholder="Search...">
                     <div class="input-group-append">

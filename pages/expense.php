@@ -108,11 +108,11 @@
                             <?php } ?>
                         </select>
                     </div>
-                    <div class="form-group recur">
+                    <div class="form-group recur mb-3">
                         <label for="recurring"><?php echo $m_recurring; ?></label>
                         <input type="checkbox" id="recur" name="recurring" value="Yes">
                     </div>
-                    <div class="form-group" id="recur-f" hidden>
+                    <div class="form-group mb-3" id="recur-f" hidden>
                         <label for="recurring-frequency"><?php echo $m_recurringfrequency; ?></label>
                         <select class="form-control" name="recurring-frequency">
                             <option value="DAILY" selected>DAILY</option>
@@ -120,11 +120,11 @@
                             <option value="MONTHLY">MONTHLY</option>
                         </select>
                     </div>
-                    <div class="form-group" id="recur-t" hidden>
+                    <div class="form-group mb-3" id="recur-t" hidden>
                         <label for="recurring-times"><?php echo $m_recurringtimes; ?></label>
                         <input class="form-control" placeholder="<?php echo $m_recurringtimes; ?>" name="recurring-times" type="number">
                     </div>
-                    <div class="form-group modal-description">
+                    <div class="form-group modal-description mb-3">
                         <label for="description"><?php echo $m_description; ?></label>
                         <textarea class="form-control" placeholder="<?php echo $m_description; ?>" name="description" rows="3"><?php //echo $v_description; ?></textarea>
                     </div>

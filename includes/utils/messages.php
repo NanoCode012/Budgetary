@@ -51,8 +51,14 @@ $m_walletname = 'Name';
 $m_back = 'Back';
 
 // Categories
-$categories = array('FOOD', 'RENT', 'UTLITIES', 'SHOPPING', 'ONLINE');
+$categories = array('FOOD', 'RENT', 'UTILITIES', 'SHOPPING', 'ONLINE');
 
 // Feedback
 $m_addalready = 'Already submitted before';
+
+// Datetime
+$m_startdate = 'Start Date';
+$m_timerange = 'Time Range';
+$m_missingdates = 'Missing Dates';
+$m_manualdates = 'Set dates manually';
 ?>
