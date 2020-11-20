@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 19, 2020 at 02:09 PM
+-- Generation Time: Nov 20, 2020 at 02:33 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.11
 
@@ -72,6 +72,74 @@ BEGIN
     END IF;
 END$$
 
+DROP PROCEDURE IF EXISTS `Get all budget category info`$$
+CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get all budget category info` (IN `user_id` INT)  NO SQL
+BEGIN
+	# create temp table
+    DECLARE i INT;
+    DROP TEMPORARY TABLE IF EXISTS `tmp`;
+    CREATE TEMPORARY TABLE `tmp` ( `budget_id` INT NOT NULL , `used` FLOAT, `maximum` FLOAT NOT NULL ) ENGINE = InnoDB;
+    SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
+    SET @n = (SELECT COUNT(*) FROM budget b WHERE b.user_id = user_id AND b.start_time < NOW() AND NOW() < b.end_time);
+    SET i=0;
+    WHILE i<@n DO 
+        SET @b = (SELECT b.id FROM budget b WHERE b.user_id = user_id AND b.start_time < NOW() AND NOW() < b.end_time LIMIT 1 OFFSET i);
+    	CALL `Get budget category info`(@b, @t);
+        INSERT INTO `tmp` VALUES (@b, @t, (SELECT maximum FROM budget WHERE id = @b)/@relative_main);
+        SET i = i + 1;
+    END WHILE;
+    SELECT * FROM `tmp`;
+    DROP TEMPORARY TABLE IF EXISTS `tmp`;
+    # loop through each budget
+        # insert total into table with budget id
+    # return temp table / delete it
+END$$
+
+DROP PROCEDURE IF EXISTS `Get budget category info`$$
+CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get budget category info` (IN `budget_id` INT, OUT `used` FLOAT)  NO SQL
+BEGIN
+    # be careful. do one check that NOW() > start_time
+	SET @relative_main = (SELECT c.relative FROM currency c, user u, budget b WHERE u.currency_id = c.id AND b.user_id = u.id AND b.id = budget_id);
+    
+    #find correct start and stop time depending on frequency
+    SET @frequency = (SELECT frequency FROM budget WHERE id = budget_id);
+    IF @frequency = 'DAILY' THEN
+    	SET @freq_t = 1;
+    ELSEIF @frequency = 'WEEKLY' THEN
+    	SET @freq_t = 7;
+    ELSEIF @frequency = 'MONTHLY' THEN
+    	SET @freq_t = 30;
+    END IF;
+    
+    SET @seconds_since_start = (SELECT TIMESTAMPDIFF(SECOND, NOW(), (SELECT start_time FROM budget WHERE id = budget_id)) MOD (@freq_t*86400.0));
+    
+    #SELECT NOW();
+    #SELECT @seconds_since_start;
+    
+    SET @start_time_cycle = (SELECT TIMESTAMPADD(SECOND, @seconds_since_start, NOW()));
+    
+    #SELECT @start_time_cycle;
+    
+    SET @end_time_cycle = (SELECT TIMESTAMPADD(DAY, @freq_t, @start_time_cycle));
+    
+    #SELECT @end_time_cycle;
+    
+	SELECT LEAST(@end_time_cycle, (SELECT end_time FROM budget WHERE id = budget_id)) INTO @end_time_cycle_clamp;
+    
+    #SELECT @end_time_cycle_clamp;
+	
+    SELECT COALESCE(SUM(total_main_currency), 0) INTO used FROM
+    (
+	SELECT t.wallet_id, SUM(t.amount), c.relative, (SUM(t.amount)*c.relative) AS total_usd,
+    ((SUM(t.amount)*c.relative)/@relative_main) AS total_main_currency 
+    FROM transaction t, wallet w, currency c, budget b 
+    WHERE b.id = budget_id AND t.category = b.category AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @start_time_cycle AND @end_time_cycle_clamp
+    GROUP BY t.wallet_id
+    ) AS transaction_per_wallet;
+    
+
+END$$
+
 DELIMITER ;
 
 -- --------------------------------------------------------
@@ -136,8 +204,8 @@ CREATE TABLE `currency` (
 --
 
 INSERT INTO `currency` (`id`, `name`, `relative`, `time_modified`) VALUES
-(1, 'USD', 1, '2020-11-19 00:00:02'),
-(2, 'THB', 0.0330257, '2020-11-19 00:00:02');
+(1, 'USD', 1, '2020-11-20 00:00:02'),
+(2, 'THB', 0.0329162, '2020-11-20 00:00:02');
 
 --
 -- Triggers `currency`
