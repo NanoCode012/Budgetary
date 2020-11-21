@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 21, 2020 at 11:45 AM
+-- Generation Time: Nov 21, 2020 at 07:50 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.11
 
@@ -191,7 +191,7 @@ BEGIN
     IF @cur_period_sum > @past_period_sum THEN
     	SET @percentage = (SELECT ((@cur_period_sum - @past_period_sum)/@past_period_sum)*100 - 1);
     ELSE 
-    	SET @percentage = (SELECT ((@past_period_sum - @cur_period_sum)/@past_period_sum)*100 - 1);
+    	SET @percentage = -(SELECT ((@past_period_sum - @cur_period_sum)/@past_period_sum)*100 - 1);
     END IF;
     
 	SELECT @total_transaction, @last_category, @highest_expense, COALESCE(@percentage, 'N/A') AS percentage_increase, @cur_period_sum, @past_period_sum, @start_date, @end_date;
