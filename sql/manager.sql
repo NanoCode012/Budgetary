@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 21, 2020 at 04:53 AM
+-- Generation Time: Nov 21, 2020 at 08:54 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.11
 
@@ -194,7 +194,34 @@ BEGIN
     	SET @percentage = (SELECT ((@past_period_sum - @cur_period_sum)/@past_period_sum)*100 - 1);
     END IF;
     
-	SELECT @total_expense, @last_category, @highest_expense, COALESCE(@percentage, '') AS percentage_increase, @cur_period_sum, @past_period_sum, @start_date, @end_date;
+	SELECT @total_expense, @last_category, @highest_expense, COALESCE(@percentage, 'N/A') AS percentage_increase, @cur_period_sum, @past_period_sum, @start_date, @end_date;
+END$$
+
+DROP PROCEDURE IF EXISTS `Get expense category used`$$
+CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get expense category used` (IN `user_id` INT, IN `start_date` DATE, IN `end_date` DATE, IN `frequency` VARCHAR(255))  NO SQL
+BEGIN
+    SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
+    
+	IF NOT frequency = '' THEN
+    	IF frequency = 'DAILY' THEN
+            SET @freq_t = 1;
+        ELSEIF frequency = 'WEEKLY' THEN
+            SET @freq_t = 7;
+        ELSEIF frequency = 'MONTHLY' THEN
+            SET @freq_t = 30;
+        END IF;
+
+        SET @start_date = (SELECT TIMESTAMPADD(DAY, -(@freq_t/2), NOW()));
+        SET @end_date = (SELECT TIMESTAMPADD(DAY, (@freq_t/2), NOW()));
+        
+    ELSE 
+    	SET @start_date = start_date;
+        SET @end_date = end_date;
+        SET @freq_t = (SELECT TIMESTAMPDIFF(DAY,start_date,end_date));
+        # throw error if end < start date
+    END IF;
+    
+    SELECT exp.category, SUM(exp.used) AS category_used FROM (SELECT w.name, t.category, SUM(t.amount), SUM(t.amount) * c.relative / @relative_main AS used FROM `transaction` t, wallet w, currency c WHERE t.user_id = user_id AND t.wallet_id = w.id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date GROUP BY t.wallet_id, t.category) AS exp GROUP BY exp.category;
 END$$
 
 DELIMITER ;
