@@ -6,11 +6,17 @@ $dict = [
     'to-date' => null,
 ];
 
-if (isset($_POST['submit'])) {
-
+if (isset($_POST['save'])) {
+    if (isset($_POST['manual-dates'])) {
+        $dict['from-date'] = $_POST['from-date'];
+        $dict['to-date'] = $_POST['to-date'];
+        $dict['frequency'] = '';
+    } else {
+        $dict['frequency'] = $_POST['recurring-frequency'];
+    }
 }
 
-$row = $db->row('CALL `Get dashboard`(?,?,?,?)', $_SESSION['user_id'], $dict['from-date'], $dict['from-date'], $dict['frequency']);
+$row = $db->row('CALL `Get dashboard`(?,?,?,?)', $_SESSION['user_id'], $dict['from-date'], $dict['to-date'], $dict['frequency']);
 ?>
 
 <div class="wrapper ">
@@ -59,7 +65,7 @@ $row = $db->row('CALL `Get dashboard`(?,?,?,?)', $_SESSION['user_id'], $dict['fr
                                     <div class="numbers">
                                         <p class="card-category">Avg Expense</p>
                                         <p class="card-title"><?php if ($row['percentage_increase'] > 0) {echo '+ ';} else {echo '- ';}
-                                                                    echo $row['percentage_increase']; ?>%
+                                                                    echo number_format($row['percentage_increase'], 2); ?>%
                                         <p>
                                     </div>
                                 </div>
@@ -69,7 +75,7 @@ $row = $db->row('CALL `Get dashboard`(?,?,?,?)', $_SESSION['user_id'], $dict['fr
                             <hr>
                             <div class="stats">
                                 <i class="fa fa-calendar-o"></i>
-                                This period
+                                This <?php if (isset($dict['frequency'])) echo $dict['frequency']; ?> period
                             </div>
                         </div>
                     </div>
@@ -231,14 +237,13 @@ $row = $db->row('CALL `Get dashboard`(?,?,?,?)', $_SESSION['user_id'], $dict['fr
             <span aria-hidden="true">&times;</span>
             </button>
         </div>
-        <form role="form" action="?p=modexpense" method="post">
+        <form role="form" action="" method="post">
             <div class="modal-body">
                 <fieldset>
                     <div class="form-group recur mb-3">
-                        <label for="recurring"><?php echo $m_recurring; ?></label>
-                        <input type="checkbox" id="recur" name="recurring" value="Yes">
+                        Pick any period or manually select time range:
                     </div>
-                    <div class="form-group mb-3" id="recur-f" hidden>
+                    <div class="form-group mb-3" id="recur-f">
                         <label for="recurring-frequency"><?php echo $m_recurringfrequency; ?></label>
                         <select class="form-control" name="recurring-frequency">
                             <option value="DAILY" selected>DAILY</option>
@@ -275,7 +280,7 @@ $row = $db->row('CALL `Get dashboard`(?,?,?,?)', $_SESSION['user_id'], $dict['fr
             <div class="modal-footer">
                 <input name="id" hidden>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Save changes</button>
+                <button type="submit" name="save" class="btn btn-primary">Save changes</button>
             </div>
         </form>
         </div>
@@ -284,11 +289,6 @@ $row = $db->row('CALL `Get dashboard`(?,?,?,?)', $_SESSION['user_id'], $dict['fr
 
 <script>
 $(function() {
-    $('#recur').click(function() {
-        var checked = $('#recur').is(':checked');
-        $('#recur-f').prop('hidden', !checked);
-    });
-
     $('#manual-dates').on('click change', function() {
         var checked = $('#manual-dates').is(':checked');
         $('#range').prop('hidden', !checked);
@@ -310,11 +310,17 @@ $(function() {
                         'rgba(255, 99, 132, 1)',
                         'rgba(54, 162, 235, 1)',
                         'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
                     ],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
                         'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
                     ]
             }],
         }

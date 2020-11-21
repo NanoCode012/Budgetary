@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 20, 2020 at 08:01 PM
+-- Generation Time: Nov 21, 2020 at 04:53 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.11
 
@@ -151,34 +151,50 @@ DROP PROCEDURE IF EXISTS `Get dashboard`$$
 CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get dashboard` (IN `user_id` INT, IN `start_date` DATE, IN `end_date` DATE, IN `frequency` VARCHAR(255))  NO SQL
 BEGIN
     SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
-    SET @start_date = NOW();
-    SET @end_date = NOW();
     
-    IF frequency = 'DAILY' THEN
-    	SET @freq_t = 1;
-    ELSEIF frequency = 'WEEKLY' THEN
-    	SET @freq_t = 7;
-    ELSEIF frequency = 'MONTHLY' THEN
-    	SET @freq_t = 30;
+    IF NOT frequency = '' THEN
+    	IF frequency = 'DAILY' THEN
+            SET @freq_t = 1;
+        ELSEIF frequency = 'WEEKLY' THEN
+            SET @freq_t = 7;
+        ELSEIF frequency = 'MONTHLY' THEN
+            SET @freq_t = 30;
+        END IF;
+
+        SET @start_date = (SELECT TIMESTAMPADD(DAY, -(@freq_t/2), NOW()));
+        SET @end_date = (SELECT TIMESTAMPADD(DAY, (@freq_t/2), NOW()));
+        
+    ELSE 
+    	SET @start_date = start_date;
+        SET @end_date = end_date;
+        SET @freq_t = (SELECT TIMESTAMPDIFF(DAY,start_date,end_date));
+        # throw error if end < start date
     END IF;
     
-    SET @start_date = (SELECT DATE_ADD(@start_date, INTERVAL -(@freq_t/2) DAY));
-    SET @end_date = (SELECT DATE_ADD(@end_date, INTERVAL (@freq_t/2) DAY));
+    #SELECT @start_date, @end_date, @freq_t, frequency;
     
-	SELECT COUNT(*) INTO @total_expense FROM transaction WHERE transaction.user_id = user_id AND time_created BETWEEN @start_date AND @end_date;
+	SELECT COALESCE(COUNT(*),0) INTO @total_expense FROM transaction WHERE transaction.user_id = user_id AND time_created BETWEEN @start_date AND @end_date;
     
 	SELECT category INTO @last_category FROM transaction t WHERE t.user_id = user_id AND t.time_created BETWEEN @start_date AND @end_date ORDER BY t.time_created DESC LIMIT 1;
     
-    SELECT MAX(((t.amount)*c.relative)/@relative_main) INTO @highest_expense FROM transaction t, currency c, wallet w WHERE t.user_id = user_id AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date;
+    SET @last_category = (SELECT COALESCE(@last_category, 'N/A'));
+    
+    SELECT COALESCE(MAX(((t.amount)*c.relative)/@relative_main), 0) INTO @highest_expense FROM transaction t, currency c, wallet w WHERE t.user_id = user_id AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date;
     
     SELECT SUM(((t.amount)*c.relative)/@relative_main) INTO @cur_period_sum FROM transaction t, currency c, wallet w WHERE t.user_id = user_id AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date;
     
-    SET @past_start_date = (SELECT DATE_ADD(@start_date, INTERVAL -@freq_t DAY));
-    SET @past_end_date = @start_date;
+    SET @past_start_date = (SELECT TIMESTAMPADD(DAY, -@freq_t, @start_date));
+    SET @past_end_date = (SELECT TIMESTAMPADD(DAY, -1, @start_date));
     
-    SELECT SUM(((t.amount)*c.relative)/@relative_main) INTO @past_period_sum FROM transaction t, currency c, wallet w WHERE t.user_id = user_id AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date;
+    SELECT SUM(((t.amount)*c.relative)/@relative_main) INTO @past_period_sum FROM transaction t, currency c, wallet w WHERE t.user_id = user_id AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @past_start_date AND @past_end_date;
     
-	SELECT @total_expense, @last_category, @highest_expense, ((@past_period_sum/@cur_period_sum)*100 - 1) AS percentage_increase;
+    IF @cur_period_sum > @past_period_sum THEN
+    	SET @percentage = (SELECT ((@cur_period_sum - @past_period_sum)/@past_period_sum)*100 - 1);
+    ELSE 
+    	SET @percentage = (SELECT ((@past_period_sum - @cur_period_sum)/@past_period_sum)*100 - 1);
+    END IF;
+    
+	SELECT @total_expense, @last_category, @highest_expense, COALESCE(@percentage, '') AS percentage_increase, @cur_period_sum, @past_period_sum, @start_date, @end_date;
 END$$
 
 DELIMITER ;
@@ -245,8 +261,8 @@ CREATE TABLE `currency` (
 --
 
 INSERT INTO `currency` (`id`, `name`, `relative`, `time_modified`) VALUES
-(1, 'USD', 1, '2020-11-20 00:00:02'),
-(2, 'THB', 0.0329162, '2020-11-20 00:00:02');
+(1, 'USD', 1, '2020-11-21 00:00:03'),
+(2, 'THB', 0.0330253, '2020-11-21 00:00:03');
 
 --
 -- Triggers `currency`
