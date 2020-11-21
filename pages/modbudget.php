@@ -34,7 +34,7 @@ if (isset($_POST['create'])) {
 
     // Custom time
     if (isset($_POST['manual-dates'])) {
-        if (isset($_POST['from-date']) && isset($_POST['to-date'])) {
+        if (isset($_POST['from-date']) && isset($_POST['to-date']) && $_POST['from-date'] != '' && $_POST['to-date'] != '') {
             $dict['from-date'] = $_POST['from-date'];
             $dict['to-date'] = $_POST['to-date'];
         } else {

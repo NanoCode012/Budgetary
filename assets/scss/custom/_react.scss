@@ -1,0 +1,14 @@
+// React
+
+.boards {
+    overflow: hidden;
+}
+.board {
+    border: 3px solid $white-color;
+    border-radius: 1em;
+    float: left;
+    font-size: 24px;
+}
+.board.selected {
+    border-color: $primary-color;
+}

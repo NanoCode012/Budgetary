@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 20, 2020 at 04:13 AM
+-- Generation Time: Nov 21, 2020 at 11:45 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.11
 
@@ -83,17 +83,17 @@ BEGIN
     DECLARE i INT;
     
     DROP TEMPORARY TABLE IF EXISTS `tmp`;
-    CREATE TEMPORARY TABLE `tmp` ( `budget_id` INT NOT NULL , `used` FLOAT, `maximum` FLOAT NOT NULL ) ENGINE = InnoDB;
+    CREATE TEMPORARY TABLE `tmp` ( `budget_id` INT NOT NULL , `category` VARCHAR(255) NOT NULL , `used` FLOAT, `maximum` FLOAT NOT NULL ) ENGINE = InnoDB;
     
     SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
     
     SET @n = (SELECT COUNT(*) FROM budget b WHERE b.user_id = user_id AND b.start_time < NOW() AND NOW() < b.end_time);
     SET i=0;
     WHILE i<@n DO 
-        SET @b = (SELECT b.id FROM budget b WHERE b.user_id = user_id AND b.start_time < NOW() AND NOW() < b.end_time LIMIT 1 OFFSET i);
+        SELECT b.id, b.category INTO @b, @c FROM budget b WHERE b.user_id = user_id AND b.start_time < NOW() AND NOW() < b.end_time LIMIT 1 OFFSET i;
         
     	CALL `Get budget category info`(@b, @t);
-        INSERT INTO `tmp` VALUES (@b, @t, (SELECT maximum FROM budget WHERE id = @b)/@relative_main);
+        INSERT INTO `tmp` VALUES (@b, @c, @t, (SELECT maximum FROM budget WHERE id = @b)/@relative_main);
         
         SET i = i + 1;
     END WHILE;
@@ -145,6 +145,110 @@ BEGIN
     ) AS transaction_per_wallet;
     
 
+END$$
+
+DROP PROCEDURE IF EXISTS `Get dashboard`$$
+CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get dashboard` (IN `user_id` INT, IN `start_date` DATE, IN `end_date` DATE, IN `frequency` VARCHAR(255))  NO SQL
+BEGIN
+    SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
+    
+    IF NOT frequency = '' THEN
+    	IF frequency = 'DAILY' THEN
+            SET @freq_t = 1;
+        ELSEIF frequency = 'WEEKLY' THEN
+            SET @freq_t = 7;
+        ELSEIF frequency = 'MONTHLY' THEN
+            SET @freq_t = 30;
+        END IF;
+
+        SET @start_date = (SELECT TIMESTAMPADD(DAY, -(@freq_t/2), NOW()));
+        SET @end_date = (SELECT TIMESTAMPADD(DAY, (@freq_t/2), NOW()));
+        
+    ELSE 
+    	SET @start_date = start_date;
+        SET @end_date = end_date;
+        SET @freq_t = (SELECT TIMESTAMPDIFF(DAY,start_date,end_date));
+        # throw error if end < start date
+    END IF;
+    
+    #SELECT @start_date, @end_date, @freq_t, frequency;
+    
+	SELECT COALESCE(COUNT(*),0) INTO @total_transaction FROM transaction WHERE transaction.user_id = user_id AND time_created BETWEEN @start_date AND @end_date;
+    
+	SELECT category INTO @last_category FROM transaction t WHERE t.user_id = user_id AND t.time_created BETWEEN @start_date AND @end_date ORDER BY t.time_created DESC LIMIT 1;
+    
+    SET @last_category = (SELECT COALESCE(@last_category, 'N/A'));
+    
+    SELECT COALESCE(MAX(((t.amount)*c.relative)/@relative_main), 0) INTO @highest_expense FROM transaction t, currency c, wallet w WHERE t.user_id = user_id AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date;
+    
+    SELECT SUM(((t.amount)*c.relative)/@relative_main) INTO @cur_period_sum FROM transaction t, currency c, wallet w WHERE t.user_id = user_id AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date;
+    
+    SET @past_start_date = (SELECT TIMESTAMPADD(DAY, -@freq_t, @start_date));
+    SET @past_end_date = (SELECT TIMESTAMPADD(DAY, -1, @start_date));
+    
+    SELECT SUM(((t.amount)*c.relative)/@relative_main) INTO @past_period_sum FROM transaction t, currency c, wallet w WHERE t.user_id = user_id AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @past_start_date AND @past_end_date;
+    
+    IF @cur_period_sum > @past_period_sum THEN
+    	SET @percentage = (SELECT ((@cur_period_sum - @past_period_sum)/@past_period_sum)*100 - 1);
+    ELSE 
+    	SET @percentage = (SELECT ((@past_period_sum - @cur_period_sum)/@past_period_sum)*100 - 1);
+    END IF;
+    
+	SELECT @total_transaction, @last_category, @highest_expense, COALESCE(@percentage, 'N/A') AS percentage_increase, @cur_period_sum, @past_period_sum, @start_date, @end_date;
+END$$
+
+DROP PROCEDURE IF EXISTS `Get expense category used`$$
+CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get expense category used` (IN `user_id` INT, IN `start_date` DATE, IN `end_date` DATE, IN `frequency` VARCHAR(255))  NO SQL
+BEGIN
+    SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
+    
+	IF NOT frequency = '' THEN
+    	IF frequency = 'DAILY' THEN
+            SET @freq_t = 1;
+        ELSEIF frequency = 'WEEKLY' THEN
+            SET @freq_t = 7;
+        ELSEIF frequency = 'MONTHLY' THEN
+            SET @freq_t = 30;
+        END IF;
+
+        SET @start_date = (SELECT TIMESTAMPADD(DAY, -(@freq_t/2), NOW()));
+        SET @end_date = (SELECT TIMESTAMPADD(DAY, (@freq_t/2), NOW()));
+        
+    ELSE 
+    	SET @start_date = start_date;
+        SET @end_date = end_date;
+        SET @freq_t = (SELECT TIMESTAMPDIFF(DAY,start_date,end_date));
+        # throw error if end < start date
+    END IF;
+    
+    SELECT exp.category, SUM(exp.used) AS category_used FROM (SELECT w.name, t.category, SUM(t.amount), SUM(t.amount) * c.relative / @relative_main AS used FROM `transaction` t, wallet w, currency c WHERE t.user_id = user_id AND t.wallet_id = w.id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date GROUP BY t.wallet_id, t.category) AS exp GROUP BY exp.category;
+END$$
+
+DROP PROCEDURE IF EXISTS `Get expense time used`$$
+CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get expense time used` (IN `user_id` INT, IN `start_date` DATE, IN `end_date` DATE, IN `frequency` VARCHAR(255))  NO SQL
+BEGIN
+    SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
+    
+	IF NOT frequency = '' THEN
+    	IF frequency = 'DAILY' THEN
+            SET @freq_t = 1;
+        ELSEIF frequency = 'WEEKLY' THEN
+            SET @freq_t = 7;
+        ELSEIF frequency = 'MONTHLY' THEN
+            SET @freq_t = 30;
+        END IF;
+
+        SET @start_date = (SELECT TIMESTAMPADD(DAY, -(@freq_t/2), NOW()));
+        SET @end_date = (SELECT TIMESTAMPADD(DAY, (@freq_t/2), NOW()));
+        
+    ELSE 
+    	SET @start_date = start_date;
+        SET @end_date = end_date;
+        SET @freq_t = (SELECT TIMESTAMPDIFF(DAY,start_date,end_date));
+        # throw error if end < start date
+    END IF;
+    
+    SELECT date, category, SUM(used) AS used FROM (SELECT DATE(t.time_created) AS date, t.wallet_id, t.category, SUM(t.amount), SUM(t.amount)*c.relative/@relative_main AS used FROM `transaction` t, wallet w, currency c WHERE t.user_id = 1 AND t.wallet_id = w.id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date GROUP BY DATE(t.time_created), t.wallet_id, t.category) AS exp GROUP BY date, category;
 END$$
 
 DELIMITER ;
@@ -211,8 +315,8 @@ CREATE TABLE `currency` (
 --
 
 INSERT INTO `currency` (`id`, `name`, `relative`, `time_modified`) VALUES
-(1, 'USD', 1, '2020-11-20 00:00:02'),
-(2, 'THB', 0.0329162, '2020-11-20 00:00:02');
+(1, 'USD', 1, '2020-11-21 00:00:03'),
+(2, 'THB', 0.0330253, '2020-11-21 00:00:03');
 
 --
 -- Triggers `currency`

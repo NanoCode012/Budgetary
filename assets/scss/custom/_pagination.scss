@@ -1,0 +1,36 @@
+// Pagination line
+.pagination > li > a
+{
+    background-color: white;
+    color: $default-color;
+}
+
+.pagination > li > a:active,
+.pagination > li > a:focus,
+.pagination > li > a:hover,
+.pagination > li > span:focus,
+.pagination > li > span:hover
+{
+    color: $white-color;
+    background-color: $default-color;
+    border-color: #ddd;
+}
+
+.pagination > .active > a
+{
+    color: white;
+    background-color:$default-color !important;
+    border: solid 1px $default-color !important;
+}
+
+.pagination > .active > a:hover
+{
+    background-color: $default-color !important;
+    border: solid 1px $default-color;
+}
+
+.dropdown-item.active
+{
+    background-color: $default-color;
+    color: $white-color;
+}

@@ -1,0 +1,20 @@
+// Progress bars
+
+$progress-height:                   1rem !default;
+$progress-font-size:                ($font-size-base * .75) !default;
+$progress-bg:                       $light-gray !default;
+$progress-border-radius:            .5rem !default;
+$progress-box-shadow:               inset 0 .1rem .1rem rgba($black-color, .1) !default;
+$progress-bar-color:                $white-color !default;
+$progress-bar-bg:                   $primary-color !default;
+$progress-bar-animation-timing:     1s linear infinite !default;
+$progress-bar-transition:           width .6s ease !default;
+
+// gradient
+$default-states:       #263148 !default;
+$primary-states:       #ba54f5 !default;
+$success-states:       #0098f0 !default;
+$info-states:          #3358f4 !default;
+$warning-states:       #ff6491 !default;
+$danger-states:        #ec250d !default;
+$black-states:         #1d253b !default;

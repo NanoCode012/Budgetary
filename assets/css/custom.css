@@ -4194,6 +4194,73 @@ License - nucleoapp.com/license/
     width: 38%;
     padding: 15px; } }
 
+.progress-container {
+  position: relative; }
+  .progress-container.progress-sm {
+    margin-top: 10px; }
+    .progress-container.progress-sm .progress .progress-value {
+      position: absolute;
+      top: -3px;
+      left: -27px;
+      color: #66615B;
+      font-size: 12px; }
+  .progress-container + .progress-container,
+  .progress-container ~ .progress-container {
+    margin-top: 15px; }
+  .progress-container .progress-badge {
+    color: #51cbce;
+    font-size: 0.8571em;
+    text-transform: uppercase; }
+    .progress-container .progress-badge.float-left {
+      margin-right: 20px; }
+  .progress-container .progress {
+    margin: 10px 0; }
+    .progress-container .progress .progress-bar {
+      border-radius: 8px;
+      box-shadow: none;
+      background: #b8d8d8; }
+      .progress-container .progress .progress-bar .progress-value {
+        position: absolute;
+        top: 2px;
+        right: 0;
+        color: #66615B;
+        font-size: 12px; }
+    .progress-container .progress.progress-bar-sm {
+      height: 3px; }
+  .progress-container.progress-neutral .progress {
+    background: rgba(255, 255, 255, 0.3); }
+  .progress-container.progress-neutral .progress-bar {
+    background: #FFFFFF; }
+  .progress-container.progress-primary .progress-bar {
+    background: #ba54f5;
+    background-image: linear-gradient(to bottom left, #ba54f5, #51cbce, #ba54f5);
+    background-size: 210% 210%;
+    background-position: top right; }
+  .progress-container.progress-info .progress-bar {
+    background: #3358f4;
+    background-image: linear-gradient(to bottom left, #3358f4, #51bcda, #3358f4);
+    background-size: 210% 210%;
+    background-position: top right; }
+  .progress-container.progress-success .progress-bar {
+    background: #0098f0;
+    background-image: linear-gradient(to bottom left, #0098f0, #6bd098, #0098f0);
+    background-size: 210% 210%;
+    background-position: top right; }
+  .progress-container.progress-warning .progress-bar {
+    background: #ff6491;
+    background-image: linear-gradient(to bottom left, #ff6491, #fbc658, #ff6491);
+    background-size: 210% 210%;
+    background-position: top right; }
+  .progress-container.progress-danger .progress-bar {
+    background: #ec250d;
+    background-image: linear-gradient(to bottom left, #ec250d, #e686f3, #ec250d);
+    background-size: 210% 210%;
+    background-position: top right; }
+
+.card-chart .progress-container + .progress-container,
+.card-chart .progress-container ~ .progress-container {
+  margin-top: 25px; }
+
 .pagination > li > a {
   background-color: white;
   color: #66615B; }
@@ -4220,27 +4287,6 @@ License - nucleoapp.com/license/
   background-color: #66615B;
   color: #FFFFFF; }
 
-.table-responsive {
-  overflow: hidden; }
-
-.sidebar .sidebar-wrapper {
-  overflow: hidden; }
-
-.card-body .avatar {
-  border: 0; }
-
-.fas, .far, .fa {
-  color: #51cbce; }
-
-.btn:hover i {
-  color: #FFFFFF; }
-
-.login-icon {
-  font-size: 1.5rem; }
-
-.login-signup, .login-signin {
-  color: #66615B; }
-
 .modal-content {
   border-radius: 1em; }
 
@@ -4255,5 +4301,26 @@ License - nucleoapp.com/license/
 
 .board.selected {
   border-color: #51cbce; }
+
+.card-body .avatar {
+  border: 0; }
+
+.table-responsive {
+  overflow: hidden; }
+
+.sidebar .sidebar-wrapper {
+  overflow: hidden; }
+
+.login-icon {
+  font-size: 1.5rem; }
+
+.login-signup, .login-signin {
+  color: #66615B; }
+
+.fas, .far, .fa {
+  color: #51cbce; }
+
+.btn:hover i {
+  color: #FFFFFF; }
 
 /*# sourceMappingURL=custom.css.map */
