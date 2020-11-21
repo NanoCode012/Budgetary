@@ -8,6 +8,8 @@ $m_emptycurrency = 'No currency provided';
 $m_loginerror = 'Failed to login';
 $m_registererror = 'Failed to register';
 $m_registersuccess = 'Success register';
+$m_resetsuccess = 'Success reset';
+$m_reseterror = 'Failed to reset';
 
 // 404
 $m_pageunknown = 'Page cannot be found. Auto redirecting ... <br>Error page: ';
@@ -61,5 +63,5 @@ $m_startdate = 'Start Date';
 $m_timerange = 'Time Range';
 $m_missingdates = 'Missing Dates';
 $m_manualdates = 'Set dates manually';
-$m_date = 'Date'
+$m_date = 'Date';
 ?>
