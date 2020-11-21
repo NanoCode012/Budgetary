@@ -8,7 +8,6 @@ $dict = [
 
 if (isset($_POST['save'])) {
     if (isset($_POST['manual-dates'])) {
-        echo 'in manual';
         if (isset($_POST['from-date']) && isset($_POST['to-date']) && $_POST['from-date'] != '' && $_POST['to-date'] != '') {
             $dict['from-date'] = $_POST['from-date'];
             $dict['to-date'] = $_POST['to-date'];
@@ -24,7 +23,8 @@ if (isset($_POST['save'])) {
 }
 
 $row = $db->row('CALL `Get dashboard`(?,?,?,?)', $_SESSION['user_id'], $dict['from-date'], $dict['to-date'], $dict['frequency']);
-$categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['user_id'], $dict['from-date'], $dict['to-date'], $dict['frequency']);
+$expense_categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['user_id'], $dict['from-date'], $dict['to-date'], $dict['frequency']);
+$expense_time = $db->run('CALL `Get expense time used`(?,?,?,?)', $_SESSION['user_id'], $dict['from-date'], $dict['to-date'], $dict['frequency']);
 ?>
 
 <div class="wrapper ">
@@ -45,7 +45,7 @@ $categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['u
                                 <div class="col-7 col-md-8">
                                     <div class="numbers">
                                         <p class="card-category">Total Expense</p>
-                                        <p class="card-title"><?php echo $row['@total_expense']; ?>
+                                        <p class="card-title"><?php if ($row['@cur_period_sum']) {echo number_format($row['@cur_period_sum'],2);} else {echo 'N/A';} ?>
                                         <p>
                                     </div>
                                 </div>
@@ -55,7 +55,7 @@ $categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['u
                             <hr>
                             <div class="stats">
                                 <i class="fa fa-refresh"></i>
-                                Updated Now
+                                Updated now
                             </div>
                         </div>
                     </div>
@@ -74,8 +74,10 @@ $categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['u
                                         <p class="card-category">Avg Expense</p>
                                         <p class="card-title" style="font-size: 0.8em">
                                                         <?php $t = $row['percentage_increase']; 
-                                                                if ($t > 0) {echo '+ ';} else {echo '- ';}
-                                                                if ($t != 'N/A') echo number_format($t, 2); ?>%
+                                                                if ($t != 'N/A') {
+                                                                    if ($t > 0) {echo '+ ';} else {echo '- ';}
+                                                                    echo number_format($t, 2) . '%';
+                                                                } else echo $t; ?>
                                         <p>
                                     </div>
                                 </div>
@@ -96,12 +98,12 @@ $categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['u
                             <div class="row">
                                 <div class="col-5 col-md-4">
                                     <div class="icon-big text-center icon-warning">
-                                        <i class="nc-icon nc-vector text-danger"></i>
+                                        <i class="fas fa-hourglass-start text-danger"></i>
                                     </div>
                                 </div>
                                 <div class="col-7 col-md-8">
                                     <div class="numbers">
-                                        <p class="card-category">Latest</p>
+                                        <p class="card-category">Category</p>
                                         <p class="card-title" style="font-size: 0.7em"><?php echo $row['@last_category']; ?>
                                         <p>
                                     </div>
@@ -112,7 +114,7 @@ $categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['u
                             <hr>
                             <div class="stats">
                                 <i class="fa fa-clock-o"></i>
-                                Recently
+                                Recently in this period
                             </div>
                         </div>
                     </div>
@@ -123,12 +125,12 @@ $categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['u
                             <div class="row">
                                 <div class="col-5 col-md-4">
                                     <div class="icon-big text-center icon-warning">
-                                        <i class="nc-icon nc-favourite-28 text-primary"></i>
+                                        <i class="fas fa-arrow-up text-primary"></i>
                                     </div>
                                 </div>
                                 <div class="col-7 col-md-8">
                                     <div class="numbers">
-                                        <p class="card-category">High Expense</p>
+                                        <p class="card-category">Highest Expense</p>
                                         <p class="card-title"><?php echo number_format($row['@highest_expense'], 0); ?>
                                         <p>
                                     </div>
@@ -138,8 +140,8 @@ $categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['u
                         <div class="card-footer ">
                             <hr>
                             <div class="stats">
-                                <i class="fa fa-refresh"></i>
-                                Latest
+                                <i class="fas fa-retweet"></i>
+                                Latest in this period
                             </div>
                         </div>
                     </div>
@@ -149,8 +151,8 @@ $categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['u
                 <div class="col-md-12">
                     <div class="card ">
                         <div class="card-header ">
-                            <h5 class="card-title">Users Behavior</h5>
-                            <p class="card-category">24 Hours performance</p>
+                            <h5 class="card-title">Expense by Time</h5>
+                            <!-- <p class="card-category">24 Hours performance</p> -->
                         </div>
                         <div class="card-body ">
                             <canvas id="barChart" width="400" height="100"></canvas>
@@ -209,14 +211,6 @@ $categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['u
                                     </div>
                                 </div>
                             <?php } ?>
-                            <!-- <br>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: 20%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <br>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: 70%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div> -->
                         </div>
                         <!-- <div class="card-footer">
                             <div class="chart-legend">
@@ -229,10 +223,7 @@ $categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['u
                             </div>
                         </div> -->
                     </div>
-                    
                 </div>
-                <canvas id="myChart" width="400" height="200"></canvas>
-                
             </div>
         </div>
     </div>
@@ -256,9 +247,9 @@ $categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['u
                     <div class="form-group mb-3" id="recur-f">
                         <label for="recurring-frequency"><?php echo $m_recurringfrequency; ?></label>
                         <select class="form-control" name="recurring-frequency">
-                            <option value="DAILY" selected>DAILY</option>
+                            <option value="DAILY">DAILY</option>
                             <option value="WEEKLY">WEEKLY</option>
-                            <option value="MONTHLY">MONTHLY</option>
+                            <option value="MONTHLY" selected>MONTHLY</option>
                         </select>
                     </div>
                     <div class="form-group mb-3" id="recur-t" hidden>
@@ -304,150 +295,89 @@ $(function() {
         $('#range').prop('hidden', !checked);
     });
 
-    // let datasets = [{
-    //             label: 'Demo',
-    //             data: [{
-    //                 t: new Date("2015/3/15 12:00"),
-    //                 y: 12
-    //                 },
-    //                 // {
-    //                 // t: new Date("2015/3/25 00:00"),
-    //                 // y: 21
-    //                 // },
-    //                 // {
-    //                 // t: new Date("2015/4/25 00:00"),
-    //                 // y: 32
-    //                 // }
-    //             ],
-    //             backgroundColor: [
-    //                 'red',
-    //                 'rgba(54, 162, 235, 0.2)',
-    //                 'rgba(255, 206, 86, 0.2)',
-    //                 'rgba(75, 192, 192, 0.2)',
-    //                 'rgba(153, 102, 255, 0.2)',
-    //                 'rgba(255, 159, 64, 0.2)'
-    //             ],
-    //             borderColor: [
-    //                 'rgba(255,99,132,1)',
-    //                 'rgba(54, 162, 235, 1)',
-    //                 'rgba(255, 206, 86, 1)',
-    //                 'rgba(75, 192, 192, 1)',
-    //                 'rgba(153, 102, 255, 1)',
-    //                 'rgba(255, 159, 64, 1)'
-    //             ],
-    //             borderWidth: 1
-    //         },
-    //         {
-    //             label: 'Demo2',
-    //             data: [{
-    //                 t: new Date("2015/3/15 12:00"),
-    //                 y: 15
-    //                 },
-    //                 // {
-    //                 // t: new Date("2015-3-25 00:00"),
-    //                 // y: 27
-    //                 // },
-    //                 // {
-    //                 // t: new Date("2015-4-25 00:00"),
-    //                 // y: 42
-    //                 // }
-    //             ],
-    //             backgroundColor: [
-    //                 'blue',
-    //                 'rgba(54, 162, 235, 0.2)',
-    //                 'rgba(255, 206, 86, 0.2)',
-    //                 'rgba(75, 192, 192, 0.2)',
-    //                 'rgba(153, 102, 255, 0.2)',
-    //                 'rgba(255, 159, 64, 0.2)'
-    //             ],
-    //             borderColor: [
-    //                 'rgba(255,99,132,1)',
-    //                 'rgba(54, 162, 235, 1)',
-    //                 'rgba(255, 206, 86, 1)',
-    //                 'rgba(75, 192, 192, 1)',
-    //                 'rgba(153, 102, 255, 1)',
-    //                 'rgba(255, 159, 64, 1)'
-    //             ],
-    //             borderWidth: 1
-    //         },
-    //     ];
+    var barDataContainer = <?= json_encode($expense_time) ?>;
+    // console.log(barDataContainer);
+    var categories = <?= json_encode($categories) ?>;
+    var dataCategories = [];
+    var category_map = {};
+    var category_bgcol = [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ];
+    var category_bdcol = [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ];
+    let i = 0;
+    categories.forEach(function(ele) {
+        dataCategories.push({
+            data: [], 
+            label: ele,
+            backgroundColor: category_bgcol[i],
+            borderColor: category_bdcol[i],
+            borderWidth: 1,
+        })
+        category_map[ele] = i;
+        i++;
+    });
+    // console.log(dataCategories);
+    // console.log(category_map);
 
-    var datasets = [{
-		"data": [{
-			"y": 2,
-			"x": new Date("2015-3-15 13:3")
-        },
-        {
-			"y": 2,
-			"x": new Date("2015-3-17 13:3")
-		}],
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1,
-		label: "FOOD"
-	}, {
-		"data": [{
-			"y": 4,
-			"x": new Date("2015-3-15 13:3")
-        },
-        {
-			"y": 7,
-			"x": new Date("2015-3-17 13:3")
-		}],
-        backgroundColor: 'rgba(255, 206, 86, 0.2)',
-        borderColor: 'rgba(255, 206, 86, 1)',
-        borderWidth: 1,
-		label: "UTILITIES"
-    }, 
-    //{
-	// 	"data": [{
-	// 		"y": 2,
-	// 		"x": "2017-12-22 09:00"
-	// 	}],
-	// 	"backgroundColor": "#5200A0",
-	// 	"label": "39ymdt11ybwhz"
-	// }, {
-	// 	"data": [{
-	// 		"y": 2,
-	// 		"x": "2017-12-22 09:00"
-	// 	}],
-	// 	"backgroundColor": "#925E44",
-	// 	"label": "4v1whmzv76j2z"
-	// }, {
-	// 	"data": [{
-	// 		"y": 2,
-	// 		"x": "2017-12-22 09:00"
-	// 	}],
-	// 	"backgroundColor": "#477BD4",
-	// 	"label": "5sfyujuhwbj9n"
-	// }, {
-	// 	"data": [{
-	// 		"y": 4,
-	// 		"x": "2017-12-22 09:00"
-	// 	}],
-	// 	"backgroundColor": "#272755",
-	// 	"label": "6x0zvf2mw8t6g"
-	// }, {
-	// 	"data": [{
-	// 		"y": 2,
-	// 		"x": "2017-12-22 09:00"
-	// 	}],
-	// 	"backgroundColor": "#F581E0",
-	// 	"label": "7kpk62m5n8j9q"
-	// }, {
-	// 	"data": [{
-	// 		"y": 20,
-	// 		"x": "2017-12-22 09:00"
-	// 	}],
-	// 	"backgroundColor": "#4128A8",
-	// 	"label": "7mwz4m103nn1k"
-    // }
-];
+    let date = barDataContainer[0]['date'];
+    let count = 0;
+    barDataContainer.forEach(function(row) {
+        if (date != row['date']) {
+            count++;
+            dataCategories.forEach(function(r) {
+                if (r['data'].length != count) {
+                    // add dummy data
+                    dataCategories[category_map[r['label']]]['data'].push({
+                        x: new Date(date),
+                        y: 0
+                    });
+                }
+            });
+            date = row['date'];
+        }
+        dataCategories[category_map[row['category']]]['data'].push({
+            x: new Date(row['date']),
+            y: row['used']
+        });
+
+    })
+    // loop to equalize at last
+    let max_count = 0;
+    dataCategories.forEach(function(r){
+        if (r['data'].length > max_count) max_count = r['data'].length;
+    })
+    if (count != max_count) {
+        date = barDataContainer[barDataContainer.length-1]['date'];
+        count = max_count;
+        dataCategories.forEach(function(r) {
+            if (r['data'].length != count) {
+                // add dummy data
+                dataCategories[category_map[r['label']]]['data'].push({
+                    x: new Date(date),
+                    y: 0
+                });
+            }
+        });
+    }
+
+    // console.log(dataCategories);
     
     var config = {
             type:'bar',
             data:{
-                datasets:datasets
+                datasets:dataCategories
             },
             options: {
                 responsive: true,
@@ -481,6 +411,10 @@ $(function() {
                         scaleLabel: {
                             display: true,
                             labelString: 'Date'
+                        },
+                        offset: true,
+                        gridLines: {
+                            display:false
                         }
                     }],
                     yAxes: [{
@@ -495,40 +429,12 @@ $(function() {
         };
 
     var ctx2 = document.getElementById('barChart').getContext('2d');
-    var myBarChart = new Chart(ctx2, config)
-    // {
-    //     type: 'bar',
-    //     data: {
-    //         // label: [new Date("2015-3-15 13:3").toLocaleString(), new Date("2015-3-25 13:2").toLocaleString(), new Date("2015-4-25 14:12").toLocaleString()],
-    //         datasets: datasets
-    //     },
-    //     options: {
-    //         scales: {
-    //             xAxes: [{
-    //                 type: 'time',
-    //                 time: {
-    //                     unit: 'day',
-    //                     unitStepSize: 1,
-    //                     displayFormats: {
-    //                         day: 'DD MMM'
-    //                     },
-    //                 stacked: true,
-    //                 ticks: {
-    //                     beginAtZero: true
-    //                 }
-    //             }
-    //             }],
-    //             yAxes: [{
-    //                 stacked: true
-    //             }]
-    //         }
-    //     }
-    // });
+    var myBarChart = new Chart(ctx2, config);
 
-    var donutDataContainer = <?= json_encode($categories) ?>;
+    var donutDataContainer = <?= json_encode($expense_categories) ?>;
     var labelDonut = [];
     var dataDonut = [];
-    console.log(donutDataContainer);
+    // console.log(donutDataContainer);
     donutDataContainer.forEach(function (row) {
         labelDonut.push(row['category']);
         dataDonut.push(row['category_used']);
@@ -566,44 +472,6 @@ $(function() {
             }
         }
         
-    });
-
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
     });
 });
 </script>
