@@ -19,7 +19,7 @@
                     <input type="password" name="password" placeholder="Password" class="login__input">
                 </div>
 
-                <a href="#" class="login__forgot">Forgot password?</a>
+                <a id="forget-in" href="#" class="login__forgot">Forgot password?</a>
 
                 <button type="submit" name="login" class="btn btn-primary">Sign In</button>
 
@@ -61,7 +61,7 @@
                     </select>
                 </div>
 
-                <a href="#" class="login__forgot">Forgot password?</a>
+                <!-- <a href="#" class="login__forgot">Forgot password?</a> -->
 
                 <button name="register" type="submit" class="btn btn-primary">Sign Up</button>
 
@@ -70,6 +70,30 @@
                     <a href="#"><span class="login-signin" id="sign-in">Sign In</span></a>
                 </div>
 
+            </form>
+
+            <!-- Forget password -->
+            <form action="?p=loginmanager" class="login__registre  none" method="post" id="forget-up">
+                <h1 class="login__title">Reset Password</h1>
+
+                <span class="login__box">
+                    <i class='fas fa-user login-icon'></i>
+                    <input type="text" name="username" placeholder="Username" class="login__input">
+                </span>
+
+                <div class="login__box">
+                    <i class='fas fa-key login-icon'></i>
+                    <input type="password" name="password" placeholder="New Password" class="login__input">
+                </div>
+
+                <!-- <a href="#" class="login__forgot">Forgot password?</a> -->
+
+                <button type="submit" name="reset" class="btn btn-primary">Reset</button>
+
+                <div>
+                    <span class="login__account">Have an Account?</span>
+                    <a href="#"><span class="login-signup" id="forget-out">Login</span></a>
+                </div>
             </form>
 
 

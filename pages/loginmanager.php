@@ -79,6 +79,44 @@ if (isset($_POST['login'])) {
             $msgBox = alertBox($m_registererror);
         }
     }
+} else if (isset($_POST['reset'])) {
+    $dict = [
+        'username' => '0',
+        'password' => '0',
+    ];
+
+    foreach ($dict as $key => $value) {
+        if (!isset($_POST[$key]) || trim($_POST[$key]) == '') {
+            $msgBox = alertBox($key . ' error');
+            break;
+        } else {
+            $dict[$key] = trim($_POST[$key]);
+        }
+    }
+
+    if (!isset($msgBox)) {
+        $password_hash = password_hash($dict['password'], PASSWORD_DEFAULT);
+        $result = $db->cell(
+            'SELECT COUNT(id) from user WHERE username = ?',
+            $dict['username']
+        );
+
+        if ($result == 1) {
+            if (
+                $stmt = $db->update('user', 
+                ['password' => $password_hash], 
+                ['username'=>$dict['username']])
+            ) {
+                $msgBox = alertBox($m_resetsuccess);
+            } else {
+                $msgBox = alertBox($m_reseterror);
+            }
+        } else {
+            $msgBox = alertBox($m_reseterror);
+        }
+    }
+
+
 }
 if (isset($msgBox)) {
     $_SESSION['msgBox'] = $msgBox;
