@@ -33,7 +33,7 @@
                                     <tbody>
                                         <?php
                                         $q =
-                                            'select t.id, t.wallet_id, w.name AS wallet_name, t.title, t.category, t.amount, t.description, t.time_created ' .
+                                            'select t.id, t.wallet_id, w.name AS wallet_name, t.title, t.category, t.amount, t.description, t.time_created, DATE_FORMAT(t.time_created, "%d/%m/%Y") AS time_created_form ' .
                                             'from `transaction` t, wallet w where t.user_id = ? ' .
                                             'and t.wallet_id = w.id ' .
                                             'order by t.time_created DESC;';
@@ -50,7 +50,7 @@
                                                 <td><?php echo $row['amount']; ?></td>
                                                 <td><?php echo $row['wallet_name']; ?></td>
                                                 <td><?php echo $row['description']; ?></td>
-                                                <td><?php echo $row['time_created']; ?></td>
+                                                <td><?php echo $row['time_created_form']; ?></td>
                                                 <td>
                                                     <?php echo editButton($row) .
                                                                     '&nbsp' . deleteButton($row['id'], '?p=modexpense') ;?>
