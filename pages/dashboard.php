@@ -139,7 +139,7 @@ $categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['u
                             <hr>
                             <div class="stats">
                                 <i class="fa fa-refresh"></i>
-                                Update now
+                                Latest
                             </div>
                         </div>
                     </div>
@@ -155,12 +155,12 @@ $categories = $db->run('CALL `Get expense category used`(?,?,?,?)', $_SESSION['u
                         <div class="card-body ">
                             <canvas id="barChart" width="400" height="100"></canvas>
                         </div>
-                        <div class="card-footer ">
+                        <!-- <div class="card-footer ">
                             <hr>
                             <div class="stats">
                                 <i class="fa fa-history"></i> Updated 3 minutes ago
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
