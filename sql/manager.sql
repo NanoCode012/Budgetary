@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 21, 2020 at 07:50 PM
+-- Generation Time: Nov 22, 2020 at 04:16 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.11
 
@@ -248,7 +248,7 @@ BEGIN
         # throw error if end < start date
     END IF;
     
-    SELECT date, category, SUM(used) AS used FROM (SELECT DATE(t.time_created) AS date, t.wallet_id, t.category, SUM(t.amount), SUM(t.amount)*c.relative/@relative_main AS used FROM `transaction` t, wallet w, currency c WHERE t.user_id = 1 AND t.wallet_id = w.id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date GROUP BY DATE(t.time_created), t.wallet_id, t.category) AS exp GROUP BY date, category;
+    SELECT date, category, SUM(used) AS used FROM (SELECT DATE(t.time_created) AS date, t.wallet_id, t.category, SUM(t.amount), SUM(t.amount)*c.relative/@relative_main AS used FROM `transaction` t, wallet w, currency c WHERE t.user_id = user_id AND t.wallet_id = w.id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date GROUP BY DATE(t.time_created), t.wallet_id, t.category) AS exp GROUP BY date, category;
 END$$
 
 DELIMITER ;
@@ -315,8 +315,14 @@ CREATE TABLE `currency` (
 --
 
 INSERT INTO `currency` (`id`, `name`, `relative`, `time_modified`) VALUES
-(1, 'USD', 1, '2020-11-21 00:00:03'),
-(2, 'THB', 0.0330253, '2020-11-21 00:00:03');
+(1, 'USD', 1, '2020-11-22 07:25:34'),
+(2, 'THB', 0.0330202, '2020-11-22 07:25:34'),
+(3, 'KHR', 0.000246609, '2020-11-22 07:25:34'),
+(4, 'EUR', 1.18566, '2020-11-22 07:25:34'),
+(5, 'SGD', 0.744322, '2020-11-22 07:25:34'),
+(6, 'MYR', 0.244349, '2020-11-22 07:25:34'),
+(7, 'PKR', 0.00622083, '2020-11-22 07:25:34'),
+(8, 'INR', 0.0134839, '2020-11-22 07:25:34');
 
 --
 -- Triggers `currency`
@@ -486,7 +492,7 @@ ALTER TABLE `budget`
 -- AUTO_INCREMENT for table `currency`
 --
 ALTER TABLE `currency`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `transaction`
