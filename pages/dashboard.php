@@ -247,9 +247,9 @@ $expense_time = $db->run('CALL `Get expense time used`(?,?,?,?)', $_SESSION['use
                     <div class="form-group mb-3" id="recur-f">
                         <label for="recurring-frequency"><?php echo $m_recurringfrequency; ?></label>
                         <select class="form-control" name="recurring-frequency">
-                            <option value="DAILY">DAILY</option>
-                            <option value="WEEKLY">WEEKLY</option>
-                            <option value="MONTHLY" selected>MONTHLY</option>
+                            <option value="DAILY" <?php if ($dict['frequency'] == 'DAILY') echo 'selected';?>>DAILY</option>
+                            <option value="WEEKLY" <?php if ($dict['frequency'] == 'WEEKLY') echo 'selected';?>>WEEKLY</option>
+                            <option value="MONTHLY" <?php if ($dict['frequency'] == 'MONTHLY') echo 'selected';?>>MONTHLY</option>
                         </select>
                     </div>
                     <div class="form-group mb-3" id="recur-t" hidden>
