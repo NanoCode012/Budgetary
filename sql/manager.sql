@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 22, 2020 at 04:16 PM
+-- Generation Time: Nov 22, 2020 at 06:54 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.4.11
 
@@ -152,24 +152,10 @@ CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get dashboard` (IN `user_id` INT, I
 BEGIN
     SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
     
-    IF NOT frequency = '' THEN
-    	IF frequency = 'DAILY' THEN
-            SET @freq_t = 1;
-        ELSEIF frequency = 'WEEKLY' THEN
-            SET @freq_t = 7;
-        ELSEIF frequency = 'MONTHLY' THEN
-            SET @freq_t = 30;
-        END IF;
-
-        SET @start_date = (SELECT TIMESTAMPADD(DAY, -(@freq_t/2), NOW()));
-        SET @end_date = (SELECT TIMESTAMPADD(DAY, (@freq_t/2), NOW()));
-        
-    ELSE 
-    	SET @start_date = start_date;
-        SET @end_date = end_date;
-        SET @freq_t = (SELECT TIMESTAMPDIFF(DAY,start_date,end_date));
-        # throw error if end < start date
-    END IF;
+    SET @start_date = start_date;
+    SET @end_date = end_date;
+	CALL `get_dates_range`(@start_date, @end_date, frequency, @freq_t);
+    CALL `get_dates_range_prev`(@start_date, @end_date, @freq_t, @past_start_date, @past_end_date);
     
     #SELECT @start_date, @end_date, @freq_t, frequency;
     
@@ -182,9 +168,6 @@ BEGIN
     SELECT COALESCE(MAX(((t.amount)*c.relative)/@relative_main), 0) INTO @highest_expense FROM transaction t, currency c, wallet w WHERE t.user_id = user_id AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date;
     
     SELECT SUM(((t.amount)*c.relative)/@relative_main) INTO @cur_period_sum FROM transaction t, currency c, wallet w WHERE t.user_id = user_id AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date;
-    
-    SET @past_start_date = (SELECT TIMESTAMPADD(DAY, -@freq_t, @start_date));
-    SET @past_end_date = (SELECT TIMESTAMPADD(DAY, -1, @start_date));
     
     SELECT SUM(((t.amount)*c.relative)/@relative_main) INTO @past_period_sum FROM transaction t, currency c, wallet w WHERE t.user_id = user_id AND w.id = t.wallet_id AND w.currency_id = c.id AND t.time_created BETWEEN @past_start_date AND @past_end_date;
     
@@ -202,24 +185,9 @@ CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get expense category used` (IN `use
 BEGIN
     SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
     
-	IF NOT frequency = '' THEN
-    	IF frequency = 'DAILY' THEN
-            SET @freq_t = 1;
-        ELSEIF frequency = 'WEEKLY' THEN
-            SET @freq_t = 7;
-        ELSEIF frequency = 'MONTHLY' THEN
-            SET @freq_t = 30;
-        END IF;
-
-        SET @start_date = (SELECT TIMESTAMPADD(DAY, -(@freq_t/2), NOW()));
-        SET @end_date = (SELECT TIMESTAMPADD(DAY, (@freq_t/2), NOW()));
-        
-    ELSE 
-    	SET @start_date = start_date;
-        SET @end_date = end_date;
-        SET @freq_t = (SELECT TIMESTAMPDIFF(DAY,start_date,end_date));
-        # throw error if end < start date
-    END IF;
+	SET @start_date = start_date;
+    SET @end_date = end_date;
+	CALL `get_dates_range`(@start_date, @end_date, frequency, @freq_t);
     
     SELECT exp.category, SUM(exp.used) AS category_used FROM (SELECT w.name, t.category, SUM(t.amount), SUM(t.amount) * c.relative / @relative_main AS used FROM `transaction` t, wallet w, currency c WHERE t.user_id = user_id AND t.wallet_id = w.id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date GROUP BY t.wallet_id, t.category) AS exp GROUP BY exp.category;
 END$$
@@ -229,26 +197,41 @@ CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get expense time used` (IN `user_id
 BEGIN
     SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
     
-	IF NOT frequency = '' THEN
-    	IF frequency = 'DAILY' THEN
-            SET @freq_t = 1;
-        ELSEIF frequency = 'WEEKLY' THEN
-            SET @freq_t = 7;
-        ELSEIF frequency = 'MONTHLY' THEN
-            SET @freq_t = 30;
-        END IF;
-
-        SET @start_date = (SELECT TIMESTAMPADD(DAY, -(@freq_t/2), NOW()));
-        SET @end_date = (SELECT TIMESTAMPADD(DAY, (@freq_t/2), NOW()));
-        
-    ELSE 
-    	SET @start_date = start_date;
-        SET @end_date = end_date;
-        SET @freq_t = (SELECT TIMESTAMPDIFF(DAY,start_date,end_date));
-        # throw error if end < start date
-    END IF;
+	SET @start_date = start_date;
+    SET @end_date = end_date;
+	CALL `get_dates_range`(@start_date, @end_date, frequency, @freq_t);
     
     SELECT date, category, SUM(used) AS used FROM (SELECT DATE(t.time_created) AS date, t.wallet_id, t.category, SUM(t.amount), SUM(t.amount)*c.relative/@relative_main AS used FROM `transaction` t, wallet w, currency c WHERE t.user_id = user_id AND t.wallet_id = w.id AND w.currency_id = c.id AND t.time_created BETWEEN @start_date AND @end_date GROUP BY DATE(t.time_created), t.wallet_id, t.category) AS exp GROUP BY date, category;
+END$$
+
+DROP PROCEDURE IF EXISTS `get_dates_range`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_dates_range` (INOUT `start_date` DATE, INOUT `end_date` DATE, IN `frequency` VARCHAR(255), OUT `freq_t` INT)  NO SQL
+BEGIN
+	IF NOT frequency = '' THEN
+    	IF frequency = 'DAILY' THEN
+            SET freq_t = 1;
+        ELSEIF frequency = 'WEEKLY' THEN
+            SET freq_t = 7;
+        ELSEIF frequency = 'MONTHLY' THEN
+            SET freq_t = 30;
+        END IF;
+
+        SET start_date = (SELECT TIMESTAMPADD(DAY, -(freq_t/2), NOW()));
+        SET end_date = (SELECT TIMESTAMPADD(DAY, (freq_t/2), NOW()));
+        
+    ELSE 
+    	SET start_date = start_date;
+        SET end_date = end_date;
+        SET freq_t = (SELECT TIMESTAMPDIFF(DAY,start_date,end_date));
+        # throw error if end < start date
+    END IF;
+END$$
+
+DROP PROCEDURE IF EXISTS `get_dates_range_prev`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_dates_range_prev` (IN `start` DATE, IN `end` DATE, IN `freq_t` INT, OUT `past_start` DATE, OUT `past_end` DATE)  NO SQL
+BEGIN
+    SET past_start = (SELECT TIMESTAMPADD(DAY, -freq_t, start));
+    SET past_end = (SELECT TIMESTAMPADD(DAY, 0, start));
 END$$
 
 DELIMITER ;
