@@ -75,6 +75,7 @@ $expense_time = $db->run('CALL `Get expense time used`(?,?,?,?)', $_SESSION['use
                                         <p class="card-title" style="font-size: 0.8em">
                                                         <?php $t = $row['percentage_increase']; 
                                                                 if ($t != 'N/A') {
+                                                                    if ($t > 0) echo '+';
                                                                     echo number_format($t, 2) . '%';
                                                                 } else echo $t; ?>
                                         <p>
@@ -246,9 +247,9 @@ $expense_time = $db->run('CALL `Get expense time used`(?,?,?,?)', $_SESSION['use
                     <div class="form-group mb-3" id="recur-f">
                         <label for="recurring-frequency"><?php echo $m_recurringfrequency; ?></label>
                         <select class="form-control" name="recurring-frequency">
-                            <option value="DAILY">DAILY</option>
-                            <option value="WEEKLY">WEEKLY</option>
-                            <option value="MONTHLY" selected>MONTHLY</option>
+                            <option value="DAILY" <?php if ($dict['frequency'] == 'DAILY') echo 'selected';?>>DAILY</option>
+                            <option value="WEEKLY" <?php if ($dict['frequency'] == 'WEEKLY') echo 'selected';?>>WEEKLY</option>
+                            <option value="MONTHLY" <?php if ($dict['frequency'] == 'MONTHLY') echo 'selected';?>>MONTHLY</option>
                         </select>
                     </div>
                     <div class="form-group mb-3" id="recur-t" hidden>
@@ -330,6 +331,7 @@ $(function() {
     // console.log(dataCategories);
     // console.log(category_map);
 
+    let format = 'YYYY-MM-DD';
     let date = barDataContainer[0]['date'];
     let count = 0;
     barDataContainer.forEach(function(row) {
@@ -339,7 +341,7 @@ $(function() {
                 if (r['data'].length != count) {
                     // add dummy data
                     dataCategories[category_map[r['label']]]['data'].push({
-                        x: new Date(date),
+                        x: moment(date).format(format),
                         y: 0
                     });
                 }
@@ -347,7 +349,8 @@ $(function() {
             date = row['date'];
         }
         dataCategories[category_map[row['category']]]['data'].push({
-            x: new Date(row['date']),
+
+            x: moment(row['date']).format(format),
             y: row['used']
         });
 
@@ -364,7 +367,7 @@ $(function() {
             if (r['data'].length != count) {
                 // add dummy data
                 dataCategories[category_map[r['label']]]['data'].push({
-                    x: new Date(date),
+                    x: moment(date).format(format),
                     y: 0
                 });
             }
@@ -434,10 +437,13 @@ $(function() {
     var labelDonut = [];
     var dataDonut = [];
     // console.log(donutDataContainer);
+    var borderDonut = [];
+    var backgroundDonut = [];
     donutDataContainer.forEach(function (row) {
         labelDonut.push(row['category']);
         dataDonut.push(row['category_used']);
-        return false;
+        borderDonut.push(category_bdcol[category_map[row['category']]]);
+        backgroundDonut.push(category_bgcol[category_map[row['category']]]);
     });
     
     var ctx1 = document.getElementById('donutChart').getContext('2d');
@@ -447,22 +453,8 @@ $(function() {
                 labels: labelDonut,
                 datasets: [{
                     data: dataDonut,
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ]
+                    borderColor: borderDonut,
+                    backgroundColor: backgroundDonut
             }],
         },
         options: {

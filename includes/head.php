@@ -25,10 +25,7 @@ include 'utils/classes.php';
     <!-- Paper Kit CSS -->
     <link href="./assets/css/bootstrap.min.css" rel="stylesheet" />
     <!-- <link href="../assets/css2/paper-dashboard.css?v=2.0.0" rel="stylesheet" /> -->
-    <!-- <link href="../assets/css/custom.css" rel="stylesheet" /> -->
     <link href="./assets/css/custom.css" rel="stylesheet" />
-
-    <!-- <link rel="stylesheet" type="text/css" href="css/main.css"> -->
 
     <!-- JQuery -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
