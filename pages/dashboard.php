@@ -330,6 +330,7 @@ $(function() {
     // console.log(dataCategories);
     // console.log(category_map);
 
+    let format = 'YYYY-MM-DD';
     let date = barDataContainer[0]['date'];
     let count = 0;
     barDataContainer.forEach(function(row) {
@@ -339,7 +340,7 @@ $(function() {
                 if (r['data'].length != count) {
                     // add dummy data
                     dataCategories[category_map[r['label']]]['data'].push({
-                        x: new Date(date),
+                        x: moment(date).format(format),
                         y: 0
                     });
                 }
@@ -347,7 +348,8 @@ $(function() {
             date = row['date'];
         }
         dataCategories[category_map[row['category']]]['data'].push({
-            x: new Date(row['date']),
+
+            x: moment(row['date']).format(format),
             y: row['used']
         });
 
@@ -364,7 +366,7 @@ $(function() {
             if (r['data'].length != count) {
                 // add dummy data
                 dataCategories[category_map[r['label']]]['data'].push({
-                    x: new Date(date),
+                    x: moment(date).format(format),
                     y: 0
                 });
             }
