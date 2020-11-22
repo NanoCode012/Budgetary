@@ -2,14 +2,14 @@
 
 if (isset($_POST['login'])) {
     if (!isset($_POST['username']) || trim($_POST['username']) == '') {
-        $msgBox = alertBox($m_emptyusername);
+        $msgBox = error($m_emptyusername);
     } else {
         $username = trim($_POST['username']);
     }
 
     if (!isset($msgBox)) {
         if (!isset($_POST['password']) || trim($_POST['password']) == '') {
-            $msgBox = alertBox($m_emptypass);
+            $msgBox = error($m_emptypass);
         } else {
             $password = trim($_POST['password']);
         }
@@ -33,10 +33,10 @@ if (isset($_POST['login'])) {
                 header('Location: index.php?p=dashboard');
                 exit();
             } else {
-                $msgBox = alertBox($m_loginerror);
+                $msgBox = error($m_loginerror);
             }
         } else {
-            $msgBox = alertBox($m_loginerror);
+            $msgBox = error($m_loginerror);
         }
     }
 } elseif (isset($_POST['register'])) {
@@ -48,7 +48,7 @@ if (isset($_POST['login'])) {
     ];
     foreach ($dict as $key => $value) {
         if (!isset($_POST[$key]) || trim($_POST[$key]) == '') {
-            $msgBox = alertBox($key . ' error');
+            $msgBox = error($key . ' error');
             break;
         } else {
             $dict[$key] = trim($_POST[$key]);
@@ -71,12 +71,12 @@ if (isset($_POST['login'])) {
                     'currency_id' => $dict['currency_id'],
                 ])
             ) {
-                $msgBox = alertBox($m_registersuccess);
+                $msgBox = success($m_registersuccess);
             } else {
-                $msgBox = alertBox($m_registererror);
+                $msgBox = error($m_registererror);
             }
         } else {
-            $msgBox = alertBox($m_registererror);
+            $msgBox = error($m_registererror);
         }
     }
 } else if (isset($_POST['reset'])) {
@@ -87,7 +87,7 @@ if (isset($_POST['login'])) {
 
     foreach ($dict as $key => $value) {
         if (!isset($_POST[$key]) || trim($_POST[$key]) == '') {
-            $msgBox = alertBox($key . ' error');
+            $msgBox = error($key . ' error');
             break;
         } else {
             $dict[$key] = trim($_POST[$key]);
@@ -107,12 +107,12 @@ if (isset($_POST['login'])) {
                 ['password' => $password_hash], 
                 ['username'=>$dict['username']])
             ) {
-                $msgBox = alertBox($m_resetsuccess);
+                $msgBox = success($m_resetsuccess);
             } else {
-                $msgBox = alertBox($m_reseterror);
+                $msgBox = error($m_reseterror);
             }
         } else {
-            $msgBox = alertBox($m_reseterror);
+            $msgBox = error($m_reseterror);
         }
     }
 

@@ -22,7 +22,7 @@ if (isset($_POST['create']) || isset($_POST['edit'])){
 
     foreach ($dict as $key => $value) {
         if ((!isset($_POST[$key]) || trim($_POST[$key]) == '') && ($key != 'description')) {
-            $msgBox = alertBox($key . ' error');
+            $msgBox = error($key . ' error');
             break;
         } else {
             $dict[$key] = trim($_POST[$key]);
