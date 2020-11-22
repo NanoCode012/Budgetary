@@ -140,7 +140,7 @@ $expense_time = $db->run('CALL `Get expense time used`(?,?,?,?)', $_SESSION['use
                             <hr>
                             <div class="stats">
                                 <i class="fas fa-retweet"></i>
-                                Latest in this period
+                                Largest in this period
                             </div>
                         </div>
                     </div>
