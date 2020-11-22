@@ -437,10 +437,13 @@ $(function() {
     var labelDonut = [];
     var dataDonut = [];
     // console.log(donutDataContainer);
+    var borderDonut = [];
+    var backgroundDonut = [];
     donutDataContainer.forEach(function (row) {
         labelDonut.push(row['category']);
         dataDonut.push(row['category_used']);
-        return false;
+        borderDonut.push(category_bdcol[category_map[row['category']]]);
+        backgroundDonut.push(category_bgcol[category_map[row['category']]]);
     });
     
     var ctx1 = document.getElementById('donutChart').getContext('2d');
@@ -450,22 +453,8 @@ $(function() {
                 labels: labelDonut,
                 datasets: [{
                     data: dataDonut,
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ]
+                    borderColor: borderDonut,
+                    backgroundColor: backgroundDonut
             }],
         },
         options: {
