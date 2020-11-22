@@ -75,6 +75,7 @@ $expense_time = $db->run('CALL `Get expense time used`(?,?,?,?)', $_SESSION['use
                                         <p class="card-title" style="font-size: 0.8em">
                                                         <?php $t = $row['percentage_increase']; 
                                                                 if ($t != 'N/A') {
+                                                                    if ($t > 0) echo '+';
                                                                     echo number_format($t, 2) . '%';
                                                                 } else echo $t; ?>
                                         <p>
