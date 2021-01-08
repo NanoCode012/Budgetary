@@ -1,7 +1,7 @@
 <?php
 $dbhost = 'localhost';
-$dbuser = 'siit';
-$dbpass = 'siitonly';
+$dbuser = 'root';
+$dbpass = 'root';
 $accdb = 'manager';
 
 ini_set('display_errors', '1');
