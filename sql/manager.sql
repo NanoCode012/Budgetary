@@ -28,7 +28,7 @@ DELIMITER $$
 -- Procedures
 --
 DROP PROCEDURE IF EXISTS `Add budget`$$
-CREATE DEFINER=`siit`@`localhost` PROCEDURE `Add budget` (IN `user_id` INT, IN `category` VARCHAR(255), IN `maximum` FLOAT, IN `frequency` VARCHAR(255), IN `from_date` DATE, IN `to_date` DATE)  NO SQL
+CREATE PROCEDURE `Add budget` (IN `user_id` INT, IN `category` VARCHAR(255), IN `maximum` FLOAT, IN `frequency` VARCHAR(255), IN `from_date` DATE, IN `to_date` DATE)  NO SQL
 BEGIN
 	IF from_date IS NULL THEN
     	IF (frequency LIKE "WEEKLY") THEN
@@ -45,7 +45,7 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS `Add transaction`$$
-CREATE DEFINER=`siit`@`localhost` PROCEDURE `Add transaction` (IN `user_id` INT, IN `wallet_id` INT, IN `title` VARCHAR(255), IN `category` VARCHAR(255), IN `amount` FLOAT, IN `description` VARCHAR(255), IN `recurring` BOOLEAN, IN `recur_freq` VARCHAR(10), IN `recur_times` INT, IN `time_created` DATETIME)  NO SQL
+CREATE PROCEDURE `Add transaction` (IN `user_id` INT, IN `wallet_id` INT, IN `title` VARCHAR(255), IN `category` VARCHAR(255), IN `amount` FLOAT, IN `description` VARCHAR(255), IN `recurring` BOOLEAN, IN `recur_freq` VARCHAR(10), IN `recur_times` INT, IN `time_created` DATETIME)  NO SQL
 BEGIN
 	SET @time = (SELECT NOW());
 	IF time_created IS NOT NULL THEN
@@ -78,7 +78,7 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS `Get all budget category info`$$
-CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get all budget category info` (IN `user_id` INT)  NO SQL
+CREATE PROCEDURE `Get all budget category info` (IN `user_id` INT)  NO SQL
 BEGIN
     DECLARE i INT;
     
@@ -103,7 +103,7 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS `Get budget category info`$$
-CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get budget category info` (IN `budget_id` INT, OUT `used` FLOAT)  NO SQL
+CREATE PROCEDURE `Get budget category info` (IN `budget_id` INT, OUT `used` FLOAT)  NO SQL
 BEGIN
     # be careful. do one check that NOW() > start_time
 	SET @relative_main = (SELECT c.relative FROM currency c, user u, budget b WHERE u.currency_id = c.id AND b.user_id = u.id AND b.id = budget_id);
@@ -148,7 +148,7 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS `Get dashboard`$$
-CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get dashboard` (IN `user_id` INT, IN `start_date` DATE, IN `end_date` DATE, IN `frequency` VARCHAR(255))  NO SQL
+CREATE PROCEDURE `Get dashboard` (IN `user_id` INT, IN `start_date` DATE, IN `end_date` DATE, IN `frequency` VARCHAR(255))  NO SQL
 BEGIN
     SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
     
@@ -181,7 +181,7 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS `Get expense category used`$$
-CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get expense category used` (IN `user_id` INT, IN `start_date` DATE, IN `end_date` DATE, IN `frequency` VARCHAR(255))  NO SQL
+CREATE PROCEDURE `Get expense category used` (IN `user_id` INT, IN `start_date` DATE, IN `end_date` DATE, IN `frequency` VARCHAR(255))  NO SQL
 BEGIN
     SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
     
@@ -193,7 +193,7 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS `Get expense time used`$$
-CREATE DEFINER=`siit`@`localhost` PROCEDURE `Get expense time used` (IN `user_id` INT, IN `start_date` DATE, IN `end_date` DATE, IN `frequency` VARCHAR(255))  NO SQL
+CREATE PROCEDURE `Get expense time used` (IN `user_id` INT, IN `start_date` DATE, IN `end_date` DATE, IN `frequency` VARCHAR(255))  NO SQL
 BEGIN
     SET @relative_main = (SELECT c.relative FROM currency c, user u WHERE u.currency_id = c.id AND u.id = user_id);
     
