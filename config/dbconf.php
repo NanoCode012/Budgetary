@@ -1,5 +1,5 @@
 <?php
-$filename = '../../secret/budgetary-dbconfig.php';
+$filename = dirname(__FILE__, 4).'/secret/budgetary-dbconfig.php';
 
 if (file_exists($filename)) {
     require_once $filename;
