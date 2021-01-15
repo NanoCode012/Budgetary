@@ -12,8 +12,15 @@
 1. Clone repo 
 2. Run `php composer.phar install` to get EasyDB and Firebase SDK
 3. Get `service account` key from Firebase and place it within `../../secret/service-account.json` of directory
-4. (OPTIONAL) Get database credentials(`dbhost`,`dbuser`,`dbpass`,`accdb`) and place it within `../../secret/budgetary-dbconfig.php` of directory
-5. (OPTIONAL) Run `npm install` to get development packages
+4. Import `sql/manager.sql` into MySQL DB
+5. (OPTIONAL) Get database credentials(`dbhost`,`dbuser`,`dbpass`,`accdb`) and place it within `../../secret/budgetary-dbconfig.php` of directory
+6. (OPTIONAL) Run `npm install` to get development packages
+
+## Setup webhook
+
+Refer to https://github.com/markomarkovic/simple-php-git-deploy
+
+Run `sudo -u www-data ssh -T git@github.com` to add github to list of known hosts.
 
 ## References
 
