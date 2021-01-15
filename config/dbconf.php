@@ -1,8 +1,14 @@
 <?php
-$dbhost = 'localhost';
-$dbuser = 'root';
-$dbpass = 'root';
-$accdb = 'manager';
+$filename = '../../secret/budgetary-dbconfig.php';
+
+if (file_exists($filename)) {
+    require_once $filename;
+} else {
+    $dbhost = 'localhost';
+    $dbuser = 'root';
+    $dbpass = 'root';
+    $accdb = 'manager';
+}
 
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');

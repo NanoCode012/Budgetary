@@ -4,7 +4,7 @@ class Firebase {
     protected $dbname;
     public function __construct($dbname = 'users'){
         $this->dbname = $dbname;
-        $factory = (new \Kreait\Firebase\Factory)->withServiceAccount('../secret/service-account.json');
+        $factory = (new \Kreait\Firebase\Factory)->withServiceAccount('../../secret/service-account.json');
         $this->database = $factory->createDatabase();
     }
     public function get(int $key = NULL){    
